@@ -4,119 +4,245 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1769e0">
 <title>Meu Uber/99 Pro</title>
 <style>
-:root{--blue:#1769e0;--dark:#1048a0;--bg:#f3f6fc;--white:#fff;--text:#202b3c;--muted:#697586;--green:#16803d;--red:#c62828}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif;font-size:15px}
-header{background:linear-gradient(135deg,var(--blue),var(--dark));color:white;padding:22px 16px}
-header h1{margin:5px 0;font-size:25px}
-header p{margin:5px 0;opacity:.9}
-nav{display:flex;gap:6px;overflow-x:auto;background:white;padding:10px;position:sticky;top:0;z-index:5;box-shadow:0 2px 8px #0001}
-nav button{border:0;background:#edf3ff;color:var(--dark);border-radius:10px;padding:11px;font-weight:bold;white-space:nowrap}
-nav button.active{background:var(--blue);color:white}
-main{max-width:850px;margin:auto;padding:12px 12px 35px}
-.page{display:none}
-.page.active{display:block}
-.card{background:white;border-radius:15px;padding:15px;margin:0 0 13px;box-shadow:0 3px 12px #18345b0b}
-h2,h3{margin:0 0 13px}
-h2{font-size:20px}
-h3{font-size:17px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.metric{font-size:22px;font-weight:bold;margin-top:7px;overflow-wrap:anywhere}
-.blue{color:var(--blue)}.green{color:var(--green)}.red{color:var(--red)}
-.muted,small{color:var(--muted)}
-label{display:block;font-weight:bold;margin:10px 0 5px}
-input,select,textarea{width:100%;padding:12px;border:1px solid #d5dce8;border-radius:10px;font-size:16px;background:white;color:var(--text)}
-button{cursor:pointer}
-.primary{border:0;background:var(--blue);color:white;padding:13px 16px;border-radius:10px;font-size:15px;font-weight:bold;width:100%;margin-top:12px}
-.secondary{border:0;background:#e8efff;color:var(--dark);padding:10px 12px;border-radius:9px;font-weight:bold}
-.danger{background:#fff0f0;color:var(--red);border:0;border-radius:8px;padding:8px}
-.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.formgrid .full{grid-column:1/-1}
-.balancecard{border:1px solid #dce7fb;background:#f8fbff;border-radius:12px;padding:13px}
-.balancecard .metric{font-size:21px}
-.notice{background:#fff8e7;border-radius:10px;padding:11px;color:#795900;font-size:13px;margin-top:10px}
-.item{border-bottom:1px solid #edf0f5;padding:12px 0}
-.item:last-child{border-bottom:0}
-.itemtop{display:flex;justify-content:space-between;gap:8px;align-items:start}
-.pill{display:inline-block;background:#e8efff;color:var(--dark);border-radius:20px;padding:4px 8px;font-size:12px}
-.tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;font-size:13px}
-th,td{text-align:left;border-bottom:1px solid #e7ebf2;padding:9px;white-space:nowrap}
-th{background:#f5f8fd}
-.empty{text-align:center;color:var(--muted);padding:18px}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
-@media(min-width:600px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+:root {
+  --blue: #1769e0;
+  --dark: #1048a0;
+  --bg: #f3f6fc;
+  --white: #fff;
+  --text: #202b3c;
+  --muted: #697586;
+  --green: #16834a;
+  --red: #c83737;
+  --border: #dce4f0;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+header {
+  background: linear-gradient(135deg, var(--blue), var(--dark));
+  color: white;
+  padding: 22px 16px;
+}
+header h1 { margin: 0 0 6px; font-size: 25px; }
+header p { margin: 0; opacity: .9; font-size: 14px; }
+nav {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  overflow-x: auto;
+  background: white;
+  border-bottom: 1px solid var(--border);
+}
+nav button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 14px;
+  background: #eaf1fd;
+  color: var(--dark);
+  font-weight: bold;
+  cursor: pointer;
+}
+nav button.active { background: var(--blue); color: white; }
+main { max-width: 1000px; margin: auto; padding: 14px; }
+.page { display: none; }
+.page.active { display: block; }
+.card {
+  background: var(--white);
+  padding: 17px;
+  margin-bottom: 14px;
+  border-radius: 15px;
+  box-shadow: 0 3px 14px #16345c0d;
+  border: 1px solid var(--border);
+}
+h2 { font-size: 21px; margin: 0 0 12px; }
+h3 { font-size: 17px; margin: 20px 0 12px; }
+p { line-height: 1.45; }
+.muted { color: var(--muted); font-size: 13px; }
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.metric {
+  padding: 14px;
+  border-radius: 12px;
+  background: #f7f9fe;
+  border: 1px solid var(--border);
+  min-width: 0;
+}
+.metric span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+.metric strong {
+  display: block;
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+.metric.highlight {
+  background: #eaf2ff;
+  border-color: #c8dcff;
+}
+.metric.positive strong { color: var(--green); }
+.metric.negative strong { color: var(--red); }
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: bold;
+  margin: 12px 0 6px;
+}
+input, select, textarea {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: white;
+  border: 1px solid #cbd6e5;
+  border-radius: 9px;
+}
+input[readonly] { background: #edf2fa; font-weight: bold; }
+textarea { resize: vertical; }
+button { font: inherit; }
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 16px;
+}
+.button-row button, .danger {
+  border: 0;
+  border-radius: 9px;
+  padding: 12px 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.primary { background: var(--blue); color: white; }
+.secondary { background: #e8edf5; color: var(--text); }
+.danger { background: #ffe9e9; color: #a82020; margin-top: 10px; }
+.total-preview {
+  margin-top: 14px;
+  padding: 15px;
+  background: #eaf2ff;
+  border: 1px solid #c8dcff;
+  border-radius: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.total-preview strong { font-size: 20px; color: var(--dark); }
+.history-item {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.history-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  font-size: 13px;
+}
+.report-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+.footer {
+  text-align: center;
+  padding: 20px 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+@media (min-width: 700px) {
+  .metrics, .report-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 380px) {
+  main { padding: 9px; }
+  .card { padding: 13px; }
+  .metric strong { font-size: 16px; }
+  .grid, .metrics, .report-grid, .history-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 <header>
-<div>CONTROLE FINANCEIRO DE MOTORISTA</div>
-<h1>🚗 Meu Uber/99 Pro</h1>
-<p>Ganhos, despesas e dinheiro sob controle</p>
+  <h1>Meu Uber/99 Pro</h1>
+  <p>Controle seus recebimentos, despesas e lucro real</p>
 </header>
+
 <nav>
-<button class="active" onclick="aba('dashboard',this)">🏠 Painel</button>
-<button onclick="aba('lancamentos',this)">➕ Lançamentos</button>
-<button onclick="aba('historico',this)">📋 Histórico</button>
-<button onclick="aba('relatorios',this)">📊 Relatórios</button>
-<button onclick="aba('backup',this)">💾 Dados</button>
+  <button class="active" onclick="aba('dashboard',this)">Painel</button>
+  <button onclick="aba('lancamentos',this)">Lançamentos</button>
+  <button onclick="aba('historico',this)">Histórico</button>
+  <button onclick="aba('relatorios',this)">Relatórios</button>
+  <button onclick="aba('backup',this)">Backup</button>
 </nav>
+
 <main>
 <section id="dashboard" class="page active">
-<div class="card">
-<h2>📊 Resumo financeiro</h2>
-<label for="filtroPainel">Período do painel</label>
-<select id="filtroPainel" onchange="renderTudo()">
-<option value="hoje">Hoje</option>
-<option value="semana">Esta semana</option>
-<option value="mes" selected>Este mês</option>
-<option value="todos">Todo o período</option>
-</select>
-</div>
-<div class="grid">
-<div class="card">💰 Total recebido<div class="metric blue" id="dRecebido">R$ 0,00</div></div>
-<div class="card">📉 Despesas<div class="metric red" id="dDespesas">R$ 0,00</div></div>
-<div class="card">✅ Lucro real<div class="metric green" id="dLucro">R$ 0,00</div></div>
-<div class="card">🎯 Reserva 10%<div class="metric" id="dReserva">R$ 0,00</div></div>
-<div class="card">🚘 Quilômetros<div class="metric" id="dKm">0 km</div></div>
-<div class="card">⏱️ Horas trabalhadas<div class="metric" id="dHoras">0 h</div></div>
-</div>
-<div class="card">
-<h2>💳 Quanto tenho disponível?</h2>
-<div class="grid">
-<div class="balancecard">
-<b>📲 Saldo Pix</b>
-<div class="metric blue" id="saldoPix">R$ 0,00</div>
-<small>Pix recebido menos pagamentos via Pix</small>
-</div>
-<div class="balancecard">
-<b>💵 Saldo em dinheiro</b>
-<div class="metric green" id="saldoDinheiro">R$ 0,00</div>
-<small>Dinheiro recebido menos pagamentos em dinheiro</small>
-</div>
-</div>
-<div class="balancecard" style="margin-top:10px">
-<b>💰 Total disponível</b>
-<div class="metric" id="saldoTotal">R$ 0,00</div>
-</div>
-<div class="notice">Os saldos são calculados pelos lançamentos cadastrados. Registre cada recebimento e pagamento na forma correta.</div>
-</div>
-<div class="grid">
-<div class="card">📈 Ganho por hora<div class="metric" id="dPorHora">R$ 0,00</div></div>
-<div class="card">🛣️ Ganho por km<div class="metric" id="dPorKm">R$ 0,00</div></div>
-</div>
-<div class="card">
-<h3>📌 Resumo do período</h3>
-<div id="resumoPainel" class="empty">Nenhum lançamento neste período.</div>
-</div>
+  <div class="card">
+    <h2>Painel financeiro</h2>
+    <label for="filtroPainel">Período dos indicadores</label>
+    <select id="filtroPainel" onchange="renderPainel()">
+      <option value="hoje">Hoje</option>
+      <option value="semana">Esta semana</option>
+      <option value="mes" selected>Este mês</option>
+      <option value="todos">Todo o histórico</option>
+    </select>
+    <div class="metrics" style="margin-top:14px">
+      <div class="metric"><span>Total recebido</span><strong id="dRecebido">R$ 0,00</strong></div>
+      <div class="metric"><span>Despesas + combustível</span><strong id="dDespesas">R$ 0,00</strong></div>
+      <div class="metric highlight"><span>Lucro real</span><strong id="dLucro">R$ 0,00</strong></div>
+      <div class="metric"><span>Reserva de 10%</span><strong id="dReserva">R$ 0,00</strong></div>
+      <div class="metric"><span>KM trabalhados</span><strong id="dKm">0 km</strong></div>
+      <div class="metric"><span>Horas trabalhadas</span><strong id="dHoras">0 h</strong></div>
+      <div class="metric"><span>Lucro por hora</span><strong id="dPorHora">R$ 0,00</strong></div>
+      <div class="metric"><span>Lucro por KM</span><strong id="dPorKm">R$ 0,00/km</strong></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Saldos disponíveis</h2>
+    <p class="muted">Saldos acumulados de todos os lançamentos, separados pela forma de pagamento.</p>
+    <div class="metrics">
+      <div class="metric"><span>Saldo Pix</span><strong id="saldoPix">R$ 0,00</strong></div>
+      <div class="metric"><span>Saldo em dinheiro</span><strong id="saldoDinheiro">R$ 0,00</strong></div>
+      <div class="metric highlight"><span>Saldo total</span><strong id="saldoTotal">R$ 0,00</strong></div>
+    </div>
+    <p class="muted" id="resumoPainel"></p>
+  </div>
 </section>
 
 <section id="lancamentos" class="page">
   <div class="card">
     <h2>Novo lançamento</h2>
-    <p class="muted">Informe os recebimentos em Pix e dinheiro separadamente. O total será calculado automaticamente.</p>
+    <p class="muted">Preencha os recebimentos e os pagamentos da jornada. Os totais são calculados automaticamente.</p>
+
     <form id="formLancamento" onsubmit="adicionar(event)">
       <div class="grid">
         <div>
@@ -143,29 +269,54 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
       </div>
 
       <h3>Despesas da jornada</h3>
+
       <div class="grid">
         <div>
-          <label for="despesaValor">Outras despesas (R$)</label>
-          <input id="despesaValor" type="number" min="0" step="0.01" value="0">
-        </div>
-        <div>
-          <label for="despesaForma">Pagamento das despesas</label>
-          <select id="despesaForma">
-            <option value="Pix">Pix</option>
-            <option value="Dinheiro">Dinheiro</option>
+          <label for="tipoDespesa">Tipo de despesa</label>
+          <select id="tipoDespesa">
+            <option value="Manutenção">Manutenção</option>
+            <option value="Lavagem do carro">Lavagem do carro</option>
+            <option value="Troca de óleo">Troca de óleo</option>
+            <option value="Arrefecimento">Arrefecimento</option>
+            <option value="Serviços mecânicos">Serviços mecânicos</option>
+            <option value="Alimentação">Alimentação</option>
+            <option value="Pedágio">Pedágio</option>
+            <option value="Estacionamento">Estacionamento</option>
+            <option value="Outros">Outros</option>
           </select>
         </div>
         <div>
-          <label for="combustivelValor">Combustível (R$)</label>
-          <input id="combustivelValor" type="number" min="0" step="0.01" value="0">
+          <label for="despesaPix">Despesa paga por Pix (R$)</label>
+          <input id="despesaPix" type="number" min="0" step="0.01" value="0" oninput="atualizarDespesas()">
         </div>
         <div>
-          <label for="combustivelForma">Pagamento do combustível</label>
-          <select id="combustivelForma">
-            <option value="Pix">Pix</option>
-            <option value="Dinheiro">Dinheiro</option>
-          </select>
+          <label for="despesaDinheiro">Despesa paga em dinheiro (R$)</label>
+          <input id="despesaDinheiro" type="number" min="0" step="0.01" value="0" oninput="atualizarDespesas()">
         </div>
+        <div>
+          <label for="despesaValor">Total das despesas (R$)</label>
+          <input id="despesaValor" type="number" min="0" step="0.01" value="0" readonly>
+        </div>
+      </div>
+
+      <h3>Combustível</h3>
+      <div class="grid">
+        <div>
+          <label for="combustivelPix">Combustível pago por Pix (R$)</label>
+          <input id="combustivelPix" type="number" min="0" step="0.01" value="0" oninput="atualizarDespesas()">
+        </div>
+        <div>
+          <label for="combustivelDinheiro">Combustível pago em dinheiro (R$)</label>
+          <input id="combustivelDinheiro" type="number" min="0" step="0.01" value="0" oninput="atualizarDespesas()">
+        </div>
+        <div>
+          <label for="combustivelValor">Total do combustível (R$)</label>
+          <input id="combustivelValor" type="number" min="0" step="0.01" value="0" readonly>
+        </div>
+      </div>
+
+      <h3>Jornada de trabalho</h3>
+      <div class="grid">
         <div>
           <label for="kmLancamento">KM trabalhados</label>
           <input id="kmLancamento" type="number" min="0" step="0.1" value="0">
@@ -175,14 +326,14 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
           <input id="horasLancamento" type="number" min="0" step="0.1" value="0">
         </div>
       </div>
+      <p class="muted">Informe KM e horas apenas uma vez por jornada ou turno para evitar duplicação nos relatórios.</p>
 
-      <p class="muted">Informe KM e horas somente uma vez por jornada ou turno, para não duplicar os totais.</p>
       <label for="observacoes">Observações (opcional)</label>
       <textarea id="observacoes" rows="3" placeholder="Anotações sobre o dia"></textarea>
 
       <div class="button-row">
         <button type="submit" class="primary">Salvar lançamento</button>
-        <button type="reset" class="secondary" onclick="setTimeout(atualizarPrevia,0)">Limpar formulário</button>
+        <button type="reset" class="secondary" onclick="setTimeout(function(){atualizarPrevia();atualizarDespesas();},0)">Limpar formulário</button>
       </div>
     </form>
   </div>
@@ -191,18 +342,13 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
 <section id="historico" class="page">
   <div class="card">
     <h2>Histórico de lançamentos</h2>
-    <p class="muted">Confira os valores registrados e exclua lançamentos cadastrados por engano.</p>
-    <div class="grid">
-      <div>
-        <label for="filtroHistorico">Período</label>
-        <select id="filtroHistorico" onchange="renderHistorico()">
-          <option value="hoje">Hoje</option>
-          <option value="semana">Esta semana</option>
-          <option value="mes" selected>Este mês</option>
-          <option value="todos">Todo o histórico</option>
-        </select>
-      </div>
-    </div>
+    <label for="filtroHistorico">Filtrar histórico</label>
+    <select id="filtroHistorico" onchange="renderHistorico()">
+      <option value="hoje">Hoje</option>
+      <option value="semana">Esta semana</option>
+      <option value="mes" selected>Este mês</option>
+      <option value="todos">Todo o histórico</option>
+    </select>
     <div id="historicoLista"></div>
   </div>
 </section>
@@ -210,7 +356,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
 <section id="relatorios" class="page">
   <div class="card">
     <h2>Relatórios</h2>
-    <p class="muted">Escolha o intervalo para conferir recebimentos, despesas, lucro, reserva, KM e horas.</p>
+    <p class="muted">Escolha as datas para calcular os resultados do período.</p>
     <div class="grid">
       <div>
         <label for="relInicio">Data inicial</label>
@@ -231,25 +377,25 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
 
 <section id="backup" class="page">
   <div class="card">
-    <h2>Dados e backup</h2>
-    <p>Exporte seus lançamentos para guardar uma cópia ou importe um arquivo de backup criado por este aplicativo.</p>
+    <h2>Backup dos dados</h2>
+    <p>Exporte os lançamentos para guardar uma cópia ou importe um arquivo de backup deste aplicativo.</p>
     <div class="button-row">
       <button type="button" class="primary" onclick="baixarBackup()">Exportar backup</button>
     </div>
     <label for="arquivoBackup">Importar arquivo de backup (.json)</label>
     <input id="arquivoBackup" type="file" accept=".json,application/json" onchange="restaurarBackup(event)">
-    <p class="muted">Atenção: importar um backup substitui os lançamentos atuais deste aplicativo neste dispositivo. Exporte uma cópia antes de importar.</p>
+    <p class="muted">Importar um backup substitui os lançamentos atuais deste aplicativo neste dispositivo. Guarde uma cópia antes de importar.</p>
   </div>
 </section>
 </main>
 
 <footer class="footer">
-  Meu Uber/99 Pro — controle seus recebimentos, custos e lucro.
+  Meu Uber/99 Pro — controle seus recebimentos, despesas e lucro real.
 </footer>
 
 <script>
 
-const CHAVE_DADOS = "MEU_UBER_99_PRO_V2";
+const CHAVE_DADOS = "MEU_UBER_99_PRO_V3";
 let registros = [];
 
 function carregarDados() {
@@ -266,13 +412,14 @@ function salvarDados() {
     localStorage.setItem(CHAVE_DADOS, JSON.stringify(registros));
     return true;
   } catch (e) {
-    alert("Não foi possível salvar. Verifique o espaço disponível no navegador.");
+    alert("Não foi possível salvar os dados no navegador.");
     return false;
   }
 }
 
 function numero(id) {
-  const valor = Number(document.getElementById(id).value);
+  const campo = document.getElementById(id);
+  const valor = Number(campo ? campo.value : 0);
   return Number.isFinite(valor) && valor > 0 ? valor : 0;
 }
 
@@ -297,16 +444,14 @@ function hoje() {
     String(d.getDate()).padStart(2, "0");
 }
 
-function escapar(texto) {
-  return String(texto ?? "").replace(/[&<>"']/g, function(c) {
-    return {
-      "&": "&amp;",
-      "<": "&lt;",
-      ">": "&gt;",
-      '"': "&quot;",
-      "'": "&#39;"
-    }[c];
-  });
+function escapar(valor) {
+  return String(valor ?? "").replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[c]));
 }
 
 function totalRecebido(r) {
@@ -325,6 +470,45 @@ function reserva(r) {
   return Math.max(0, lucro(r) * 0.10);
 }
 
+function valorDespesaPix(r) {
+  return r.despesaPix != null
+    ? Number(r.despesaPix || 0)
+    : (r.despesaForma === "Pix" ? Number(r.despesa || 0) : 0);
+}
+
+function valorDespesaDinheiro(r) {
+  return r.despesaDinheiro != null
+    ? Number(r.despesaDinheiro || 0)
+    : (r.despesaForma === "Dinheiro" ? Number(r.despesa || 0) : 0);
+}
+
+function valorCombustivelPix(r) {
+  return r.combustivelPix != null
+    ? Number(r.combustivelPix || 0)
+    : (r.combustivelForma === "Pix" ? Number(r.combustivel || 0) : 0);
+}
+
+function valorCombustivelDinheiro(r) {
+  return r.combustivelDinheiro != null
+    ? Number(r.combustivelDinheiro || 0)
+    : (r.combustivelForma === "Dinheiro" ? Number(r.combustivel || 0) : 0);
+}
+
+function atualizarDespesas() {
+  const dp = numero("despesaPix");
+  const dd = numero("despesaDinheiro");
+  const cp = numero("combustivelPix");
+  const cd = numero("combustivelDinheiro");
+
+  document.getElementById("despesaValor").value = (dp + dd).toFixed(2);
+  document.getElementById("combustivelValor").value = (cp + cd).toFixed(2);
+}
+
+function atualizarPrevia() {
+  document.getElementById("totalRecebidoPreview").textContent =
+    moeda(numero("pixRecebido") + numero("dinheiroRecebido"));
+}
+
 function inicioSemana() {
   const d = new Date();
   d.setHours(0, 0, 0, 0);
@@ -337,22 +521,26 @@ function inicioSemana() {
 
 function filtrarPeriodo(periodo) {
   const dataHoje = hoje();
+
   if (periodo === "hoje") {
     return registros.filter(r => r.data === dataHoje);
   }
+
   if (periodo === "semana") {
     const inicio = inicioSemana();
     return registros.filter(r => r.data >= inicio && r.data <= dataHoje);
   }
+
   if (periodo === "mes") {
     const mes = dataHoje.slice(0, 7);
     return registros.filter(r => String(r.data || "").startsWith(mes));
   }
+
   return registros.slice();
 }
 
 function somar(lista, campo) {
-  return lista.reduce((total, r) => total + Number(r[campo] || 0), 0);
+  return lista.reduce((s, r) => s + Number(r[campo] || 0), 0);
 }
 
 function resumo(lista) {
@@ -363,6 +551,7 @@ function resumo(lista) {
   const resultado = recebido - custos;
   const km = somar(lista, "km");
   const horas = somar(lista, "horas");
+
   return {
     recebido,
     despesas,
@@ -377,87 +566,20 @@ function resumo(lista) {
   };
 }
 
-function atualizarPrevia() {
-  const pix = numero("pixRecebido");
-  const dinheiro = numero("dinheiroRecebido");
-  document.getElementById("totalRecebidoPreview").textContent =
-    moeda(pix + dinheiro);
-}
-
-function adicionar(evento) {
-  evento.preventDefault();
-
-  const registro = {
-    id: String(Date.now()) + String(Math.floor(Math.random() * 100000)),
-    data: document.getElementById("dataLancamento").value || hoje(),
-    descricao: document.getElementById("descricao").value.trim(),
-    pix: numero("pixRecebido"),
-    dinheiro: numero("dinheiroRecebido"),
-    despesa: numero("despesaValor"),
-    despesaForma: document.getElementById("despesaForma").value,
-    combustivel: numero("combustivelValor"),
-    combustivelForma: document.getElementById("combustivelForma").value,
-    km: numero("kmLancamento"),
-    horas: numero("horasLancamento"),
-    observacoes: document.getElementById("observacoes").value.trim()
-  };
-
-  if (!registro.descricao) {
-    alert("Informe uma descrição para o lançamento.");
-    return;
-  }
-
-  if (
-    totalRecebido(registro) === 0 &&
-    totalCustos(registro) === 0 &&
-    registro.km === 0 &&
-    registro.horas === 0
-  ) {
-    alert("Informe algum recebimento, despesa, combustível, KM ou horas.");
-    return;
-  }
-
-  registros.push(registro);
-  if (!salvarDados()) {
-    registros.pop();
-    return;
-  }
-
-  document.getElementById("formLancamento").reset();
-  document.getElementById("dataLancamento").value = hoje();
-  atualizarPrevia();
-  renderTudo();
-  alert("Lançamento salvo com sucesso!");
-  aba("dashboard", document.querySelector('[onclick*="aba(\'dashboard\'"]'));
-}
-
-function excluir(id) {
-  if (!confirm("Deseja excluir este lançamento?")) return;
-
-  const anterior = registros.slice();
-  registros = registros.filter(r => String(r.id) !== String(id));
-
-  if (!salvarDados()) {
-    registros = anterior;
-    return;
-  }
-  renderTudo();
-}
-
 function saldoPorForma(forma) {
-  let saldo = 0;
-  registros.forEach(r => {
+  return registros.reduce((saldo, r) => {
     if (forma === "Pix") {
-      saldo += Number(r.pix || 0);
-      if (r.despesaForma === "Pix") saldo -= Number(r.despesa || 0);
-      if (r.combustivelForma === "Pix") saldo -= Number(r.combustivel || 0);
-    } else {
-      saldo += Number(r.dinheiro || 0);
-      if (r.despesaForma === "Dinheiro") saldo -= Number(r.despesa || 0);
-      if (r.combustivelForma === "Dinheiro") saldo -= Number(r.combustivel || 0);
+      return saldo
+        + Number(r.pix || 0)
+        - valorDespesaPix(r)
+        - valorCombustivelPix(r);
     }
-  });
-  return saldo;
+
+    return saldo
+      + Number(r.dinheiro || 0)
+      - valorDespesaDinheiro(r)
+      - valorCombustivelDinheiro(r);
+  }, 0);
 }
 
 function colocarTexto(id, valor) {
@@ -481,22 +603,91 @@ function renderPainel() {
 
   const pix = saldoPorForma("Pix");
   const dinheiro = saldoPorForma("Dinheiro");
+
   colocarTexto("saldoPix", moeda(pix));
   colocarTexto("saldoDinheiro", moeda(dinheiro));
   colocarTexto("saldoTotal", moeda(pix + dinheiro));
 
-  const textoPeriodo = {
+  const nomes = {
     hoje: "Hoje",
     semana: "Esta semana",
     mes: "Este mês",
     todos: "Todo o histórico"
-  }[periodo] || "Período escolhido";
+  };
 
   colocarTexto("resumoPainel",
-    textoPeriodo + ": " + lista.length + " lançamento(s). " +
-    "Recebimentos menos despesas e combustível = " + moeda(r.lucro) +
-    ". Reserva calculada em 10% do lucro positivo."
+    nomes[periodo] + ": " + lista.length +
+    " lançamento(s). Lucro = recebimentos menos despesas e combustível. " +
+    "A reserva corresponde a 10% do lucro positivo."
   );
+}
+
+function adicionar(evento) {
+  evento.preventDefault();
+  atualizarDespesas();
+
+  const registro = {
+    id: String(Date.now()) + String(Math.floor(Math.random() * 100000)),
+    data: document.getElementById("dataLancamento").value || hoje(),
+    descricao: document.getElementById("descricao").value.trim(),
+    pix: numero("pixRecebido"),
+    dinheiro: numero("dinheiroRecebido"),
+    tipoDespesa: document.getElementById("tipoDespesa").value,
+    despesaPix: numero("despesaPix"),
+    despesaDinheiro: numero("despesaDinheiro"),
+    despesa: numero("despesaPix") + numero("despesaDinheiro"),
+    combustivelPix: numero("combustivelPix"),
+    combustivelDinheiro: numero("combustivelDinheiro"),
+    combustivel: numero("combustivelPix") + numero("combustivelDinheiro"),
+    km: numero("kmLancamento"),
+    horas: numero("horasLancamento"),
+    observacoes: document.getElementById("observacoes").value.trim()
+  };
+
+  if (!registro.descricao) {
+    alert("Informe a descrição da jornada.");
+    return;
+  }
+
+  if (
+    totalRecebido(registro) === 0 &&
+    totalCustos(registro) === 0 &&
+    registro.km === 0 &&
+    registro.horas === 0
+  ) {
+    alert("Informe algum recebimento, custo, KM ou horas.");
+    return;
+  }
+
+  registros.push(registro);
+
+  if (!salvarDados()) {
+    registros.pop();
+    return;
+  }
+
+  document.getElementById("formLancamento").reset();
+  document.getElementById("dataLancamento").value = hoje();
+  atualizarPrevia();
+  atualizarDespesas();
+  renderTudo();
+
+  alert("Lançamento salvo com sucesso!");
+  aba("dashboard");
+}
+
+function excluir(id) {
+  if (!confirm("Deseja excluir este lançamento?")) return;
+
+  const anterior = registros.slice();
+  registros = registros.filter(r => String(r.id) !== String(id));
+
+  if (!salvarDados()) {
+    registros = anterior;
+    return;
+  }
+
+  renderTudo();
 }
 
 function renderHistorico() {
@@ -511,38 +702,29 @@ function renderHistorico() {
     return;
   }
 
-  area.innerHTML = lista.map(r => {
-    const resultado = lucro(r);
-    return `
-      <div class="history-item">
-        <div class="history-head">
-          <strong>${escapar(r.descricao)}</strong>
-          <span>${escapar(r.data)}</span>
-        </div>
-        <div class="history-grid">
-          <span>Pix recebido: <b>${moeda(r.pix)}</b></span>
-          <span>Dinheiro recebido: <b>${moeda(r.dinheiro)}</b></span>
-          <span>Despesas: <b>${moeda(r.despesa)}</b></span>
-          <span>Combustível: <b>${moeda(r.combustivel)}</b></span>
-          <span>Lucro real: <b>${moeda(resultado)}</b></span>
-          <span>KM: <b>${decimal(r.km)}</b></span>
-          <span>Horas: <b>${decimal(r.horas)}</b></span>
-        </div>
-        ${r.observacoes ? `<p>${escapar(r.observacoes)}</p>` : ""}
-        <p class="muted">Despesas pagas em ${escapar(r.despesaForma || "Pix")}; combustível pago em ${escapar(r.combustivelForma || "Pix")}.</p>
-        <button class="danger" type="button" onclick="excluir('${escapar(r.id)}')">Excluir lançamento</button>
+  area.innerHTML = lista.map(r => `
+    <div class="history-item">
+      <div class="history-head">
+        <strong>${escapar(r.descricao)}</strong>
+        <span>${escapar(r.data)}</span>
       </div>
-    `;
-  }).join("");
-}
-
-function renderTudo() {
-  renderPainel();
-  renderHistorico();
-  if (document.getElementById("relInicio").value &&
-      document.getElementById("relFim").value) {
-    renderRelatorio();
-  }
+      <div class="history-grid">
+        <span>Pix recebido: <b>${moeda(r.pix)}</b></span>
+        <span>Dinheiro recebido: <b>${moeda(r.dinheiro)}</b></span>
+        <span>Tipo de despesa: <b>${escapar(r.tipoDespesa || "Outros")}</b></span>
+        <span>Despesa paga por Pix: <b>${moeda(valorDespesaPix(r))}</b></span>
+        <span>Despesa paga em dinheiro: <b>${moeda(valorDespesaDinheiro(r))}</b></span>
+        <span>Combustível pago por Pix: <b>${moeda(valorCombustivelPix(r))}</b></span>
+        <span>Combustível pago em dinheiro: <b>${moeda(valorCombustivelDinheiro(r))}</b></span>
+        <span>Total recebido: <b>${moeda(totalRecebido(r))}</b></span>
+        <span>Lucro real: <b>${moeda(lucro(r))}</b></span>
+        <span>KM: <b>${decimal(r.km)} km</b></span>
+        <span>Horas: <b>${decimal(r.horas)} h</b></span>
+      </div>
+      ${r.observacoes ? `<p>${escapar(r.observacoes)}</p>` : ""}
+      <button class="danger" type="button" onclick="excluir('${escapar(r.id)}')">Excluir lançamento</button>
+    </div>
+  `).join("");
 }
 
 function renderRelatorio() {
@@ -551,9 +733,10 @@ function renderRelatorio() {
   const area = document.getElementById("relatorioResultado");
 
   if (!inicio || !fim) {
-    area.innerHTML = '<p class="muted">Selecione a data inicial e a data final.</p>';
+    area.innerHTML = '<p class="muted">Selecione a data inicial e a final.</p>';
     return;
   }
+
   if (inicio > fim) {
     area.innerHTML = '<p class="muted">A data inicial deve ser anterior ou igual à final.</p>';
     return;
@@ -561,10 +744,11 @@ function renderRelatorio() {
 
   const lista = registros.filter(r => r.data >= inicio && r.data <= fim);
   const r = resumo(lista);
+
   area.innerHTML = `
     <div class="report-grid">
       <div class="metric"><span>Recebimentos</span><strong>${moeda(r.recebido)}</strong></div>
-      <div class="metric"><span>Despesas e combustível</span><strong>${moeda(r.custos)}</strong></div>
+      <div class="metric"><span>Despesas + combustível</span><strong>${moeda(r.custos)}</strong></div>
       <div class="metric"><span>Lucro real</span><strong>${moeda(r.lucro)}</strong></div>
       <div class="metric"><span>Reserva de 10%</span><strong>${moeda(r.reserva)}</strong></div>
       <div class="metric"><span>KM trabalhados</span><strong>${decimal(r.km)} km</strong></div>
@@ -583,11 +767,26 @@ function relatorioMes() {
   renderRelatorio();
 }
 
+function renderTudo() {
+  renderPainel();
+  renderHistorico();
+
+  if (
+    document.getElementById("relInicio").value &&
+    document.getElementById("relFim").value
+  ) {
+    renderRelatorio();
+  }
+}
+
 function baixarBackup() {
-  const conteudo = JSON.stringify(registros, null, 2);
-  const arquivo = new Blob([conteudo], { type: "application/json" });
+  const arquivo = new Blob(
+    [JSON.stringify(registros, null, 2)],
+    { type: "application/json" }
+  );
   const url = URL.createObjectURL(arquivo);
   const link = document.createElement("a");
+
   link.href = url;
   link.download = "backup-meu-uber-99-pro.json";
   document.body.appendChild(link);
@@ -601,66 +800,83 @@ function restaurarBackup(evento) {
   if (!arquivo) return;
 
   const leitor = new FileReader();
+
   leitor.onload = function() {
     try {
       const dados = JSON.parse(leitor.result);
-      if (!Array.isArray(dados)) throw new Error("Formato inválido");
+
+      if (!Array.isArray(dados)) {
+        throw new Error("Arquivo inválido");
+      }
 
       const validos = dados.every(r =>
-        r && typeof r === "object" &&
+        r &&
         typeof r.data === "string" &&
         typeof r.descricao === "string" &&
         Number.isFinite(Number(r.pix || 0)) &&
         Number.isFinite(Number(r.dinheiro || 0))
       );
+
       if (!validos) throw new Error("Dados inválidos");
 
-      if (!confirm("Importar este backup substituirá os lançamentos atuais. Continuar?")) {
+      if (!confirm("A importação substituirá os lançamentos atuais. Continuar?")) {
         evento.target.value = "";
         return;
       }
 
       const anterior = registros;
       registros = dados;
-      if (!salvarDados()) registros = anterior;
+
+      if (!salvarDados()) {
+        registros = anterior;
+        return;
+      }
+
       renderTudo();
-      alert("Importação concluída.");
+      alert("Backup importado com sucesso.");
     } catch (e) {
-      alert("Não foi possível importar. Confira se o arquivo é um backup válido deste aplicativo.");
+      alert("Arquivo inválido ou incompatível com este aplicativo.");
     }
+
     evento.target.value = "";
   };
+
   leitor.readAsText(arquivo);
 }
 
 function aba(id, botao) {
-  document.querySelectorAll(".page").forEach(secao => secao.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(secao =>
+    secao.classList.remove("active")
+  );
+
   const pagina = document.getElementById(id);
   if (pagina) pagina.classList.add("active");
 
-  document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll("nav button").forEach(b =>
+    b.classList.remove("active")
+  );
+
   if (botao) {
     botao.classList.add("active");
   } else {
-    const botoes = document.querySelectorAll("nav button");
-    botoes.forEach(b => {
-      if (b.getAttribute("onclick") && b.getAttribute("onclick").includes("'" + id + "'")) {
-        b.classList.add("active");
-      }
+    document.querySelectorAll("nav button").forEach(b => {
+      const acao = b.getAttribute("onclick") || "";
+      if (acao.includes("'" + id + "'")) b.classList.add("active");
     });
   }
 }
 
 document.addEventListener("DOMContentLoaded", function() {
   carregarDados();
-  const data = hoje();
 
+  const data = hoje();
   document.getElementById("dataLancamento").value = data;
   document.getElementById("relInicio").value = data.slice(0, 7) + "-01";
   document.getElementById("relFim").value = data;
 
-  renderTudo();
   atualizarPrevia();
+  atualizarDespesas();
+  renderTudo();
 });
 
 </script>
