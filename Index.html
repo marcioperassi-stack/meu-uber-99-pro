@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1769e0">
+<title>Meu Uber/99 Pro</title>
+<style>
+:root{--azul:#1769e0;--escuro:#1048a0;--fundo:#f3f6fc;--branco:#fff;--texto:#202b3c;--cinza:#697586;--verde:#12805c;--vermelho:#c93636}
+*{box-sizing:border-box}
+body{margin:0;background:var(--fundo);color:var(--texto);font-family:Arial,sans-serif;font-size:15px}
+header{background:linear-gradient(135deg,var(--azul),var(--escuro));color:white;padding:22px 16px}
+header h1{font-size:24px;margin:0 0 6px}
+header p{margin:0;opacity:.9}
+nav{display:flex;gap:7px;padding:10px;background:white;overflow-x:auto;position:sticky;top:0;z-index:5;box-shadow:0 2px 7px #0001}
+nav a{white-space:nowrap;text-decoration:none;color:var(--escuro);background:#edf3ff;padding:10px 12px;border-radius:9px;font-weight:bold;font-size:13px}
+nav a:active,nav a:hover{background:var(--azul);color:white}
+main{max-width:1000px;margin:auto;padding:14px}
+section{scroll-margin-top:70px;margin-bottom:20px}
+h2{font-size:20px;margin:8px 0 14px}
+h3{font-size:16px;margin:0 0 12px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.card,.painel{background:white;border-radius:14px;padding:15px;box-shadow:0 2px 9px #1c31500b;border:1px solid #e8edf5}
+.card small{color:var(--cinza);display:block;margin-bottom:8px}
+.valor{font-size:22px;font-weight:bold;overflow-wrap:anywhere}
+.sub{font-size:12px;color:var(--cinza);margin-top:7px}
+.lucro{color:var(--verde)}.negativo{color:var(--vermelho)}
+.painel{margin-top:12px}
+label{display:block;font-size:13px;font-weight:bold;margin:11px 0 5px}
+input,select,textarea{width:100%;padding:12px;border:1px solid #d5deeb;border-radius:9px;background:white;color:var(--texto);font-size:16px}
+input:focus,select:focus{outline:2px solid #b9d2ff;border-color:var(--azul)}
+button{border:0;border-radius:9px;padding:12px 15px;background:var(--azul);color:white;font-size:15px;font-weight:bold;cursor:pointer}
+button.sec{background:#eaf1ff;color:var(--escuro)}
+button.perigo{background:#fff0f0;color:var(--vermelho)}
+.botoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}
+.linha{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{background:white;padding:13px;border-radius:11px;border:1px solid #e3eaf4;margin-top:9px}
+.itemtop{display:flex;justify-content:space-between;gap:10px;align-items:start}
+.item strong{overflow-wrap:anywhere}
+.tag{display:inline-block;background:#edf3ff;color:#174da4;border-radius:20px;padding:4px 8px;font-size:11px;margin:5px 4px 0 0}
+.vazio{color:var(--cinza);padding:16px;text-align:center}
+hr{border:0;border-top:1px solid #e5ebf4;margin:15px 0}
+footer{text-align:center;color:var(--cinza);font-size:12px;padding:20px}
+@media(min-width:650px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}}
+@media(max-width:380px){.valor{font-size:19px}header h1{font-size:21px}.linha{gap:7px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🚗 Meu Uber/99 Pro</h1>
+<p>Controle suas corridas, despesas e lucro real</p>
+</header>
+<nav>
+<a href="#painel">Painel</a>
+<a href="#lancamentos">Lançamentos</a>
+<a href="#historico">Histórico</a>
+<a href="#relatorios">Relatórios</a>
+<a href="#backup">Backup</a>
+</nav>
+<main>
+<section id="painel">
+<h2>📊 Resumo financeiro</h2>
+<div class="grid">
+<div class="card"><small>Ganhos</small><div class="valor" id="totalGanhos">R$ 0,00</div><div class="sub">Uber + 99</div></div>
+<div class="card"><small>Despesas + combustível</small><div class="valor" id="totalDespesas">R$ 0,00</div><div class="sub">Custos registrados</div></div>
+<div class="card"><small>Lucro real</small><div class="valor lucro" id="lucroReal">R$ 0,00</div><div class="sub">Ganhos menos custos</div></div>
+<div class="card"><small>Reserva de 10%</small><div class="valor" id="reserva">R$ 0,00</div><div class="sub">Sobre lucro positivo</div></div>
+</div>
+<div class="painel">
+<h3>Desempenho da jornada</h3>
+<div class="grid">
+<div><small>Quilômetros</small><div class="valor" id="totalKm">0 km</div></div>
+<div><small>Horas</small><div class="valor" id="totalHoras">0 h</div></div>
+<div><small>Lucro por hora</small><div class="valor" id="porHora">R$ 0,00</div></div>
+<div><small>Lucro por km</small><div class="valor" id="porKm">R$ 0,00</div></div>
+</div>
+</div>
+<div class="painel">
+<h3>Ganhos por plataforma</h3>
+<div class="linha">
+<div><span class="tag">Uber</span><div class="valor" id="ganhoUber">R$ 0,00</div></div>
+<div><span class="tag">99</span><div class="valor" id="ganho99">R$ 0,00</div></div>
+</div>
+</div>
+</section>
+<section id="lancamentos">
+<h2>➕ Novo lançamento</h2>
+<div class="painel">
+<form id="formLancamento">
+<input type="hidden" id="editId">
+<div class="formgrid">
+<div><label for="tipo">Tipo de lançamento</label>
+<select id="tipo" required>
+<option value="ganho">Ganho de corrida</option>
+<option value="despesa">Despesa operacional</option>
+<option value="combustivel">Combustível</option>
+<option value="jornada">Jornada / quilometragem</option>
+</select></div>
+<div><label for="plataforma">Plataforma</label>
+<select id="plataforma">
+<option value="Uber">Uber</option>
+<option value="99">99</option>
+<option value="Ambos">Ambos / geral</option>
+</select></div>
+<div><label for="data">Data</label><input id="data" type="date" required></div>
+<div><label for="descricao">Descrição</label><input id="descricao" maxlength="100" placeholder="Ex.: corridas da manhã" required></div>
+<div id="campoCategoria"><label for="categoria">Categoria</label>
+<select id="categoria">
+<option>Corridas</option><option>Lavagem do carro</option><option>Manutenção</option><option>Troca de óleo</option><option>Arrefecimento</option><option>Serviços mecânicos</option><option>Alimentação</option><option>Pedágio</option><option>Estacionamento</option><option>Pneus</option><option>Outros</option>
+</select></div>
+<div id="campoValor"><label for="valor">Valor (R$)</label><input id="valor" type="number" min="0.01" step="0.01" placeholder="0,00"></div>
+<div id="campoPagamento"><label for="pagamento">Forma de pagamento / recebimento</label>
+<select id="pagamento"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Aplicativo</option><option>Outro</option></select></div>
+<div id="campoLitros"><label for="litros">Litros abastecidos (opcional)</label><input id="litros" type="number" min="0" step="0.01" placeholder="Ex.: 20,5"></div>
+<div><label for="km">Quilômetros rodados</label><input id="km" type="number" min="0" step="0.1" placeholder="Ex.: 85"></div>
+<div><label for="horas">Horas trabalhadas</label><input id="horas" type="number" min="0" step="0.25" placeholder="Ex.: 6,5"></div>
+</div>
+<p class="sub">Informe quilômetros e horas uma única vez para cada período de trabalho.</p>
+<div class="botoes">
+<button type="submit" id="btnSalvar">Salvar lançamento</button>
+<button type="button" class="sec" id="btnCancelar" hidden>Cancelar edição</button>
+</div>
+</form>
+</div>
+</section>
+
+<section id="historico">
+<h2>📋 Histórico de lançamentos</h2>
+<div class="painel">
+<div class="linha">
+<div><label for="filtroMes">Mês</label><input type="month" id="filtroMes"></div>
+<div><label for="filtroPlataforma">Plataforma</label>
+<select id="filtroPlataforma"><option value="Todas">Todas</option><option value="Uber">Uber</option><option value="99">99</option><option value="Ambos">Geral / Ambos</option></select></div>
+</div>
+<div id="listaLancamentos"><div class="vazio">Nenhum lançamento cadastrado.</div></div>
+</div>
+</section>
+
+<section id="relatorios">
+<h2>📈 Relatórios</h2>
+<div class="painel">
+<div class="linha">
+<div><label for="relInicio">Data inicial</label><input type="date" id="relInicio"></div>
+<div><label for="relFim">Data final</label><input type="date" id="relFim"></div>
+</div>
+<label for="relPlataforma">Plataforma do relatório</label>
+<select id="relPlataforma"><option value="Todas">Uber + 99</option><option value="Uber">Somente Uber</option><option value="99">Somente 99</option></select>
+<div class="botoes">
+<button type="button" id="btnRelatorio">Gerar relatório</button>
+<button type="button" class="sec" id="btnMes">Mês atual</button>
+</div>
+<hr>
+<div class="grid">
+<div class="card"><small>Ganhos</small><div class="valor" id="relGanhos">R$ 0,00</div></div>
+<div class="card"><small>Despesas e combustível</small><div class="valor" id="relDespesas">R$ 0,00</div></div>
+<div class="card"><small>Lucro real</small><div class="valor" id="relLucro">R$ 0,00</div></div>
+<div class="card"><small>Reserva sugerida</small><div class="valor" id="relReserva">R$ 0,00</div></div>
+<div class="card"><small>Quilômetros</small><div class="valor" id="relKm">0 km</div></div>
+<div class="card"><small>Horas trabalhadas</small><div class="valor" id="relHoras">0 h</div></div>
+<div class="card"><small>Lucro por hora</small><div class="valor" id="relHora">R$ 0,00</div></div>
+<div class="card"><small>Lucro por km</small><div class="valor" id="relKmValor">R$ 0,00</div></div>
+</div>
+<hr>
+<h3>Separação por aplicativo</h3>
+<div id="relSeparado"></div>
+</div>
+</section>
+
+<section id="backup">
+<h2>💾 Backup dos dados</h2>
+<div class="painel">
+<p>Exporte seus lançamentos para guardar uma cópia. A restauração substitui os dados atualmente salvos neste aplicativo.</p>
+<div class="botoes">
+<button type="button" id="btnExportar">Baixar backup</button>
+<button type="button" class="sec" id="btnImportar">Restaurar backup</button>
+<input type="file" id="arquivoBackup" accept=".json,application/json" hidden>
+</div>
+<p class="sub">Os dados ficam salvos neste navegador. Para usar em outro aparelho, exporte o backup e restaure nele.</p>
+</div>
+</section>
+
+<footer>Meu Uber/99 Pro • Controle financeiro de corridas</footer>
+</main>
+
+<script>
+
+const $ = id => document.getElementById(id);
+const CHAVE = "MEU_UBER_99_PRO_V1";
+const dinheiro = n => (Number(n)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const numero = n => (Number(n)||0).toLocaleString("pt-BR",{maximumFractionDigits:2});
+const hoje = () => {
+  const d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+};
+const mesAtual = () => hoje().slice(0,7);
+const idNovo = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+
+let registros = [];
+try {
+  const salvo = JSON.parse(localStorage.getItem(CHAVE) || "[]");
+  if (Array.isArray(salvo)) {
+    registros = salvo.filter(r =>
+      r && typeof r.id === "string" &&
+      ["ganho","despesa","combustivel","jornada"].includes(r.tipo) &&
+      typeof r.data === "string"
+    );
+  }
+} catch(e) {
+  registros = [];
+}
+
+function salvar() {
+  try {
+    localStorage.setItem(CHAVE,JSON.stringify(registros));
+    return true;
+  } catch(e) {
+    alert("Não foi possível salvar. Verifique o espaço disponível no navegador.");
+    return false;
+  }
+}
+
+function soma(lista, tipo) {
+  return lista.filter(r=>r.tipo===tipo).reduce((s,r)=>s+(Number(r.valor)||0),0);
+}
+
+function calcular(lista) {
+  const ganhos = soma(lista,"ganho");
+  const despesas = soma(lista,"despesa")+soma(lista,"combustivel");
+  const lucro = ganhos-despesas;
+  const km = lista.reduce((s,r)=>s+(Number(r.km)||0),0);
+  const horas = lista.reduce((s,r)=>s+(Number(r.horas)||0),0);
+  return {
+    ganhos,despesas,lucro,km,horas,
+    reserva:Math.max(0,lucro)*0.10,
+    porHora:horas>0?lucro/horas:0,
+    porKm:km>0?lucro/km:0
+  };
+}
+
+function atualizarTipo() {
+  const tipo=$("tipo").value;
+  $("campoValor").hidden=tipo==="jornada";
+  $("campoPagamento").hidden=tipo==="jornada";
+  $("campoLitros").hidden=tipo!=="combustivel";
+  $("campoCategoria").hidden=tipo==="jornada";
+  $("valor").required=tipo!=="jornada";
+
+  const categorias = tipo==="ganho"
+    ? ["Corridas","Bônus","Promoções","Outros"]
+    : tipo==="combustivel"
+      ? ["Combustível"]
+      : tipo==="despesa"
+        ? ["Lavagem do carro","Manutenção","Troca de óleo","Arrefecimento","Serviços mecânicos","Alimentação","Pedágio","Estacionamento","Pneus","Combustível","Outros"]
+        : [];
+
+  const atual=$("categoria").value;
+  $("categoria").innerHTML=categorias.map(c=>`<option>${c}</option>`).join("");
+  if(categorias.includes(atual)) $("categoria").value=atual;
+  if(tipo==="combustivel") $("categoria").value="Combustível";
+  if(tipo==="ganho") $("categoria").value="Corridas";
+}
+
+function limparFormulario() {
+  $("formLancamento").reset();
+  $("editId").value="";
+  $("data").value=hoje();
+  $("btnSalvar").textContent="Salvar lançamento";
+  $("btnCancelar").hidden=true;
+  atualizarTipo();
+}
+
+function renderPainel() {
+  const c=calcular(registros);
+  $("totalGanhos").textContent=dinheiro(c.ganhos);
+  $("totalDespesas").textContent=dinheiro(c.despesas);
+  $("lucroReal").textContent=dinheiro(c.lucro);
+  $("lucroReal").className="valor "+(c.lucro<0?"negativo":"lucro");
+  $("reserva").textContent=dinheiro(c.reserva);
+  $("totalKm").textContent=numero(c.km)+" km";
+  $("totalHoras").textContent=numero(c.horas)+" h";
+  $("porHora").textContent=dinheiro(c.porHora);
+  $("porKm").textContent=dinheiro(c.porKm);
+  $("ganhoUber").textContent=dinheiro(soma(registros.filter(r=>r.plataforma==="Uber"),"ganho"));
+  $("ganho99").textContent=dinheiro(soma(registros.filter(r=>r.plataforma==="99"),"ganho"));
+}
+
+function nomeTipo(tipo) {
+  return {ganho:"Ganho",despesa:"Despesa",combustivel:"Combustível",jornada:"Jornada"}[tipo]||tipo;
+}
+
+function renderHistorico() {
+  const mes=$("filtroMes").value;
+  const plataforma=$("filtroPlataforma").value;
+  const lista=registros
+    .filter(r=>(!mes||r.data.startsWith(mes)) &&
+      (plataforma==="Todas"||r.plataforma===plataforma))
+    .sort((a,b)=>(b.data+b.id).localeCompare(a.data+a.id));
+
+  if(!lista.length) {
+    $("listaLancamentos").innerHTML='<div class="vazio">Nenhum lançamento neste filtro.</div>';
+    return;
+  }
+
+  $("listaLancamentos").innerHTML=lista.map(r=>{
+    const valor=r.tipo==="jornada"?"Jornada sem valor financeiro":dinheiro(r.valor);
+    const detalhes=[r.plataforma,nomeTipo(r.tipo),r.categoria||"",r.pagamento||"",
+      Number(r.km)>0?numero(r.km)+" km":"",
+      Number(r.horas)>0?numero(r.horas)+" h":"",
+      Number(r.litros)>0?numero(r.litros)+" litros":""].filter(Boolean).join(" • ");
+
+    return `<div class="item">
+      <div class="itemtop">
+        <div><strong>${escapar(r.descricao||nomeTipo(r.tipo))}</strong>
+        <div class="sub">${escapar(r.data)} • ${escapar(detalhes)}</div></div>
+        <strong>${valor}</strong>
+      </div>
+      <div class="botoes">
+        <button type="button" class="sec" data-editar="${escapar(r.id)}">Editar</button>
+        <button type="button" class="perigo" data-excluir="${escapar(r.id)}">Excluir</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+function escapar(valor) {
+  return String(valor??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+}
+
+function renderRelatorio() {
+  const inicio=$("relInicio").value;
+  const fim=$("relFim").value;
+  const plataforma=$("relPlataforma").value;
+  if(inicio&&fim&&inicio>fim) {
+    alert("A data inicial não pode ser posterior à data final.");
+    return;
+  }
+  const lista=registros.filter(r=>
+    (!inicio||r.data>=inicio)&&(!fim||r.data<=fim)&&
+    (plataforma==="Todas"||r.plataforma===plataforma)
+  );
+  const c=calcular(lista);
+  $("relGanhos").textContent=dinheiro(c.ganhos);
+  $("relDespesas").textContent=dinheiro(c.despesas);
+  $("relLucro").textContent=dinheiro(c.lucro);
+  $("relLucro").className="valor "+(c.lucro<0?"negativo":"lucro");
+  $("relReserva").textContent=dinheiro(c.reserva);
+  $("relKm").textContent=numero(c.km)+" km";
+  $("relHoras").textContent=numero(c.horas)+" h";
+  $("relHora").textContent=dinheiro(c.porHora);
+  $("relKmValor").textContent=dinheiro(c.porKm);
+
+  $("relSeparado").innerHTML=["Uber","99"]
+    .filter(p=>plataforma==="Todas"||p===plataforma)
+    .map(p=>{
+      const x=calcular(lista.filter(r=>r.plataforma===p));
+      return `<div class="item"><strong>${p}</strong>
+        <p>Ganhos: ${dinheiro(x.ganhos)}</p>
+        <p>Despesas: ${dinheiro(x.despesas)}</p>
+        <p>Lucro real: <strong>${dinheiro(x.lucro)}</strong></p>
+        <p>${numero(x.km)} km • ${numero(x.horas)} horas</p></div>`;
+    }).join("")||'<div class="vazio">Sem dados neste período.</div>';
+}
+
+function renderTudo() {
+  renderPainel();
+  renderHistorico();
+  renderRelatorio();
+}
+
+$("tipo").addEventListener("change",atualizarTipo);
+
+$("formLancamento").addEventListener("submit",e=>{
+  e.preventDefault();
+  const tipo=$("tipo").value;
+  const valor=Number($("valor").value)||0;
+  const km=Number($("km").value)||0;
+  const horas=Number($("horas").value)||0;
+  const litros=Number($("litros").value)||0;
+
+  if(tipo!=="jornada"&&valor<=0) {
+    alert("Informe um valor maior que zero.");
+    return;
+  }
+  if(tipo==="jornada"&&km===0&&horas===0) {
+    alert("Informe os quilômetros ou as horas da jornada.");
+    return;
+  }
+  if(km<0||horas<0||litros<0) {
+    alert("Quilômetros, horas e litros não podem ser negativos.");
+    return;
+  }
+
+  const id=$("editId").value;
+  const item={
+    id:id||idNovo(),tipo,
+    plataforma:$("plataforma").value,
+    data:$("data").value,
+    descricao:$("descricao").value.trim(),
+    categoria:tipo==="jornada"?"Jornada":$("categoria").value,
+    valor:tipo==="jornada"?0:valor,
+    pagamento:tipo==="jornada"?"":$("pagamento").value,
+    km,horas,litros:tipo==="combustivel"?litros:0
+  };
+
+  if(!item.data||!item.descricao) {
+    alert("Preencha a data e a descrição.");
+    return;
+  }
+
+  if(id) registros=registros.map(r=>r.id===id?item:r);
+  else registros.push(item);
+
+  if(!salvar()) return;
+  limparFormulario();
+  renderTudo();
+  alert("Lançamento salvo com sucesso!");
+});
+
+$("btnCancelar").addEventListener("click",limparFormulario);
+
+$("listaLancamentos").addEventListener("click",e=>{
+  const editar=e.target.closest("[data-editar]");
+  const excluir=e.target.closest("[data-excluir]");
+
+  if(editar) {
+    const r=registros.find(x=>x.id===editar.dataset.editar);
+    if(!r) return;
+    $("editId").value=r.id;
+    $("tipo").value=r.tipo;
+    atualizarTipo();
+    $("plataforma").value=r.plataforma;
+    $("data").value=r.data;
+    $("descricao").value=r.descricao;
+    $("categoria").value=r.categoria||"Outros";
+    $("valor").value=r.valor||"";
+    $("pagamento").value=r.pagamento||"Pix";
+    $("km").value=r.km||"";
+    $("horas").value=r.horas||"";
+    $("litros").value=r.litros||"";
+    $("btnSalvar").textContent="Salvar alterações";
+    $("btnCancelar").hidden=false;
+    location.hash="#lancamentos";
+  }
+
+  if(excluir) {
+    const id=excluir.dataset.excluir;
+    if(!confirm("Deseja excluir este lançamento?")) return;
+    registros=registros.filter(r=>r.id!==id);
+    if(salvar()) renderTudo();
+  }
+});
+
+$("filtroMes").addEventListener("change",renderHistorico);
+$("filtroPlataforma").addEventListener("change",renderHistorico);
+$("btnRelatorio").addEventListener("click",renderRelatorio);
+
+$("btnMes").addEventListener("click",()=>{
+  $("relInicio").value=mesAtual()+"-01";
+  $("relFim").value=hoje();
+  renderRelatorio();
+});
+
+$("btnExportar").addEventListener("click",()=>{
+  const conteudo=JSON.stringify({
+    app:"Meu Uber/99 Pro",versao:1,
+    exportadoEm:new Date().toISOString(),registros
+  },null,2);
+  const arquivo=new Blob([conteudo],{type:"application/json"});
+  const url=URL.createObjectURL(arquivo);
+  const link=document.createElement("a");
+  link.href=url;
+  link.download="backup-meu-uber-99-"+hoje()+".json";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+});
+
+$("btnImportar").addEventListener("click",()=>$("arquivoBackup").click());
+
+$("arquivoBackup").addEventListener("change",e=>{
+  const arquivo=e.target.files[0];
+  if(!arquivo) return;
+  const leitor=new FileReader();
+
+  leitor.onload=()=>{
+    try {
+      const dados=JSON.parse(leitor.result);
+      const lista=Array.isArray(dados)?dados:dados.registros;
+      const tipos=["ganho","despesa","combustivel","jornada"];
+
+      if(!Array.isArray(lista)||!lista.every(r=>
+        r&&typeof r.data==="string"&&tipos.includes(r.tipo)&&
+        typeof r.descricao==="string"&&Number.isFinite(Number(r.valor))&&
+        Number(r.valor)>=0&&Number.isFinite(Number(r.km||0))&&Number(r.km||0)>=0&&
+        Number.isFinite(Number(r.horas||0))&&Number(r.horas||0)>=0&&
+        ["Uber","99","Ambos"].includes(r.plataforma)
+      )) throw new Error("Formato inválido");
+
+      if(!confirm("Restaurar este backup? Os lançamentos atuais serão substituídos.")) return;
+      registros=lista.map(r=>({...r,id:typeof r.id==="string"?r.id:idNovo(),litros:Number(r.litros)||0}));
+      if(salvar()) {
+        limparFormulario();
+        renderTudo();
+        alert("Backup restaurado com sucesso!");
+      }
+    } catch(err) {
+      alert("Não foi possível restaurar. Confira se selecionou um backup válido do Meu Uber/99 Pro.");
+    } finally {
+      $("arquivoBackup").value="";
+    }
+  };
+  leitor.readAsText(arquivo);
+});
+
+$("data").value=hoje();
+$("filtroMes").value=mesAtual();
+$("relInicio").value=mesAtual()+"-01";
+$("relFim").value=hoje();
+atualizarTipo();
+renderTudo();
+</script>
+</body>
+</html>
