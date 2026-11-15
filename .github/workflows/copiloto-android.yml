@@ -47,7 +47,7 @@ jobs:
           gradle-version: '8.9'
 
       - name: Compilar APK de depuracao
-        run: gradle -p android-copiloto :app:assembleDemoDebug --no-daemon --stacktrace
+        run: gradle -p android-copiloto :app:testDemoDebugUnitTest :app:assembleDemoDebug --no-daemon --stacktrace
 
       - name: Verificar APK de demonstração sem serviço sensível
         shell: bash
@@ -55,8 +55,8 @@ jobs:
           APK="android-copiloto/app/build/outputs/apk/demo/debug/app-demo-debug.apk"
           test -f "$APK"
           "$ANDROID_HOME/build-tools/35.0.0/aapt" dump xmltree "$APK" AndroidManifest.xml > manifest-debug.txt
-          if grep -E "OfferReaderService|BIND_ACCESSIBILITY_SERVICE|accessibilityservice.AccessibilityService" manifest-debug.txt; then
-            echo "ERRO: Serviço de Acessibilidade presente na demo!"; exit 1
+          if grep -E "OfferReaderService|BIND_ACCESSIBILITY_SERVICE|accessibilityservice.AccessibilityService|READ_MEDIA_IMAGES|READ_EXTERNAL_STORAGE|SYSTEM_ALERT_WINDOW|android.permission.INTERNET" manifest-debug.txt; then
+            echo "ERRO: Permissão ou serviço proibido presente na demo!"; exit 1
           fi
           if ! grep -q "br.com.meuuber99pro.copiloto.demo" manifest-debug.txt; then
             echo "ERRO: Identificador da demo não encontrado!"; exit 1
@@ -67,6 +67,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: meu-uber-99-demo-manual-sem-acessibilidade
+          name: meu-uber-99-demo-analise-print-sem-acessibilidade
           path: android-copiloto/app/build/outputs/apk/demo/debug/app-demo-debug.apk
           if-no-files-found: error
