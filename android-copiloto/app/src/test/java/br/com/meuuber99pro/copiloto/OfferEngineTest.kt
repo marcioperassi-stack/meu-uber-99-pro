@@ -13,7 +13,7 @@ class OfferEngineTest {
             12 min (10,9 km)
             R$ 3,00 adicional
         """.trimIndent()
-        val offer = OfferEngine.parseScreenshotText(text)
+        val offer = OfferEngine.parseScreenshotText(texto)
         assertNotNull(offer)
         assertEquals(19.40, offer!!.fare, 0.0001)
         assertEquals(0.825, offer.pickupKm, 0.0001)
