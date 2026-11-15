@@ -2,6 +2,7 @@ package br.com.meuuber99pro.copiloto
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
@@ -15,6 +16,9 @@ import android.widget.CheckBox
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
+import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.text.TextRecognition
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 
 /**
  * Tela inicial do protótipo. Consentimento é obrigatório antes de analisar qualquer oferta.
@@ -24,6 +28,11 @@ class MainActivity : Activity() {
     private val background = Color.rgb(8, 17, 12)
     private val foreground = Color.rgb(233, 249, 237)
     private val green = Color.rgb(55, 220, 115)
+    private val imageRequestCode = 4901
+    private var demoInputs: List<EditText> = emptyList()
+    private var screenshotStatus: TextView? = null
+    private var demoResult: TextView? = null
+    private var readingImage = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +40,11 @@ class MainActivity : Activity() {
         window.navigationBarColor = background
         if (BuildConfig.FLAVOR == "demo") {
             exibirDemoSemPermissoes()
+            // Recebe somente print explicitamente compartilhado pelo próprio usuário.
+            if (intent?.action == Intent.ACTION_SEND && 
+                intent?.type?.startsWith("image/") == true) {
+                readSharedImage(intent)?.let { readImageLocally(it) }
+            }
             return
         }
 
@@ -147,10 +161,11 @@ class MainActivity : Activity() {
         container.addView(texto("Meu Uber/99 Pro", 28f, green))
         container.addView(texto("DEMONSTRAÇÃO SEM ACESSO ÀS TELAS", 18f, green))
         container.addView(texto(
-            "Esta versão permite testar os cálculos com valores digitados. " +
-                "Não lê a Uber ou a 99, não abre janelas sobre outros aplicativos " +
-                "e não solicita acesso às informações do celular. " +
-                "A função automática continua em estudo, separadamente.", 15f
+            "Além de digitar os dados, você pode ESCOLHER ou COMPARTILHAR " +
+                "um print da oferta. O aplicativo tenta ler valor, km e minutos " +
+                "diretamente no celular e preenche os campos para você conferir. " +
+                "Não lê a tela da Uber/99 automaticamente nem solicita Acessibilidade. " +
+                "A leitura automática continua em estudo.", 15f
         ))
         val campos = mutableListOf<EditText>()
         fun campo(rotulo: String, exemplo: String) {
@@ -172,7 +187,29 @@ class MainActivity : Activity() {
         campo("Distância da viagem (km)", "8")
         campo("Tempo até o passageiro (min)", "5")
         campo("Tempo da viagem (min)", "25")
+        demoInputs = campos.toList()
+        val imageButton = Button(this).apply {
+            text = "Escolher print da oferta (leitura local)"
+            isAllCaps = false
+            setBackgroundColor(Color.rgb(36, 90, 53))
+            setTextColor(Color.WHITE)
+            setOnClickListener {
+                val picker = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = "image/*"
+                }
+                startActivityForResult(picker, imageRequestCode)
+            }
+        }
+        container.addView(imageButton)
+        screenshotStatus = texto(
+            "Você também pode compartilhar um print da Galeria para este aplicativo. " +
+                "Confira os cinco valores reconhecidos antes de tocar em Analisar. " +
+                "Caso a leitura fique incompleta, digite manualmente.", 14f
+        )
+        container.addView(screenshotStatus)
         val resultado = texto("Toque em Analisar para fazer uma simulação.", 18f)
+        demoResult = resultado
         val analisar = Button(this).apply {
             text = "Analisar corrida de teste"
             isAllCaps = false
@@ -218,14 +255,84 @@ class MainActivity : Activity() {
                 "não entram no cálculo da classificação.", 14f
         ))
         container.addView(texto(
-            "Esta é uma demonstração de cálculo, não um aplicativo de leitura automática. " +
-                "Use somente com o veículo parado. Não tente desativar o Play Protect " +
-                "para instalar esta ou qualquer outra versão.", 13f
+            "A análise de prints é experimental: textos pequenos, valores adicionais " +
+                "ou formatos diferentes podem não ser reconhecidos. Confira todos os " +
+                "números antes de analisar. Não guarda o print nem envia dados pela internet. " +
+                "Use com o veículo parado. Não desative o Play Protect.", 13f
         ))
         setContentView(ScrollView(this).apply {
             isFillViewport = true
             addView(container)
         })
+    }
+
+
+    @Suppress("DEPRECATION")
+    private fun readSharedImage(shared: Intent): Uri? =
+        shared.getParcelableExtra(Intent.EXTRA_STREAM)
+
+    @Deprecated("API clássica suficiente para o protótipo de importação manual")
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (BuildConfig.FLAVOR != "demo") return
+        if (requestCode != imageRequestCode || resultCode != RESULT_OK) return
+        val uri = data?.data
+        if (uri == null) {
+            screenshotStatus?.text = "Nenhuma imagem selecionada."
+        } else {
+            readImageLocally(uri)
+        }
+    }
+
+    /**
+     * OCR acionado apenas pela escolha/compartilhamento de imagem pelo usuário.
+     * O app não salva a foto nem envia o texto. Sem permissão de Acessibilidade.
+     * Não classifica automaticamente: mostra os campos para confirmação.
+     */
+    private fun readImageLocally(uri: Uri) {
+        if (readingImage || demoInputs.size != 5) return
+        readingImage = true
+        screenshotStatus?.text = "Lendo os números do print no celular..."
+        val img = try {
+            InputImage.fromFilePath(this, uri)
+        } catch (_: Exception) {
+            screenshotStatus?.text = "Não foi possível abrir essa imagem. Escolha um print legível."
+            readingImage = false
+            return
+        }
+        val reader = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+        reader.process(img)
+            .addOnSuccessListener { recognized ->
+                val offer = OfferEngine.parseScreenshotText(recognized.text)
+                if (offer == null) {
+                    screenshotStatus?.text =
+                        "A leitura não encontrou uma única oferta com duas etapas completas. " +
+                        "Confira se o print mostra preço, busca e viagem, ou digite os valores."
+                    demoResult?.text = "Ainda não analisada: informe ou confira os valores."
+                } else {
+                    val data = listOf(
+                        offer.fare, offer.pickupKm, offer.tripKm,
+                        offer.pickupMinutes, offer.tripMinutes
+                    )
+                    demoInputs.zip(data).forEach { (field, value) ->
+                        field.setText(java.lang.String.format(
+                            java.util.Locale.US, "%.3f", value
+                        ).trimEnd('0').trimEnd('.'))
+                    }
+                    screenshotStatus?.text =
+                        "Print lido! Confirme os 5 campos abaixo. " +
+                        "Se algo estiver errado, corrija antes de analisar."
+                    demoResult?.text = "Dados preenchidos pelo print. Toque em Analisar após conferir."
+                    demoResult?.setTextColor(foreground)
+                }
+            }
+            .addOnFailureListener {
+                screenshotStatus?.text = "Falha na leitura do print. Preencha manualmente."
+            }
+            .addOnCompleteListener {
+                reader.close()
+                readingImage = false
+            }
     }
 
 }
