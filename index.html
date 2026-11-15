@@ -481,6 +481,25 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
           <input type="number" id="analiseKmMensais" min="1" step="1" placeholder="Informe sua previsão real de km">
         </div>
       </div>
+      <div class="separador"></div>
+      <h3>Estime os km mensais pela sua rotina</h3>
+      <p class="muted">Você informou que roda entre 250 e 350 km por dia. A média de referência é 300 km/dia. Informe quantos dias costuma trabalhar no mês; não preenchemos esse número por você.</p>
+      <div class="analise-campos">
+        <div>
+          <label for="analiseKmDiaMin">Km por dia — menor média</label>
+          <input type="number" id="analiseKmDiaMin" min="1" step="1" value="250">
+        </div>
+        <div>
+          <label for="analiseKmDiaMax">Km por dia — maior média</label>
+          <input type="number" id="analiseKmDiaMax" min="1" step="1" value="350">
+        </div>
+        <div>
+          <label for="analiseDiasMes">Dias trabalhados por mês</label>
+          <input type="number" id="analiseDiasMes" min="1" max="31" step="1" placeholder="Quantos dias você trabalha?">
+        </div>
+      </div>
+      <button type="button" class="btn secundario" onclick="aplicarEstimativaMensal()">Calcular km mensais pela média</button>
+      <p id="analiseEstimativaMensal" class="muted" role="status" aria-live="polite">Aguardando quantidade de dias trabalhados no mês.</p>
       <p class="analise-discreto">Sem os quilômetros mensais, o aplicativo mostra o resultado antes da parcela, mas não classifica a corrida como dentro das metas. O financiamento não é registrado automaticamente nos lançamentos e pode incluir amortização de dívida, não apenas despesa contábil.</p>
     </div>
 
@@ -1131,8 +1150,47 @@ const CHAVE_ANALISE = "MEU_UBER_99_PRO_ANALISE_V1";
 const CHAVE_PERFIL_ETANOL = "MEU_UBER_99_PRO_SANDERO_ETANOL_V1";
 const CAMPOS_PREFERENCIAS_ANALISE = [
   "analiseCombustivel", "analiseConsumo", "analiseDesgaste",
-  "analiseMetaKm", "analiseMetaHora", "analiseParcela", "analiseKmMensais"
+  "analiseMetaKm", "analiseMetaHora", "analiseParcela", "analiseKmMensais",
+  "analiseKmDiaMin", "analiseKmDiaMax", "analiseDiasMes"
 ];
+
+function calcularEstimativaMensal(minKmDia, maxKmDia, dias) {
+  if (![minKmDia, maxKmDia, dias].every(Number.isFinite) ||
+      minKmDia <= 0 || maxKmDia < minKmDia ||
+      !Number.isInteger(dias) || dias < 1 || dias > 31) {
+    throw new Error("Confira os km por dia e informe entre 1 e 31 dias trabalhados no mês.");
+  }
+  const kmMin = minKmDia * dias;
+  const kmMax = maxKmDia * dias;
+  const kmMedio = (kmMin + kmMax) / 2;
+  return { kmMin, kmMax, kmMedio };
+}
+
+function aplicarEstimativaMensal() {
+  const get = id => {
+    const valor = document.getElementById(id).value.trim();
+    return valor === "" ? NaN : Number(valor);
+  };
+  let estimativa;
+  try {
+    estimativa = calcularEstimativaMensal(
+      get("analiseKmDiaMin"), get("analiseKmDiaMax"), get("analiseDiasMes")
+    );
+  } catch (erro) {
+    document.getElementById("analiseEstimativaMensal").textContent = erro.message;
+    return;
+  }
+  document.getElementById("analiseKmMensais").value = String(estimativa.kmMedio);
+  const parcela = get("analiseParcela");
+  const rateio = Number.isFinite(parcela) && parcela >= 0 ?
+    " Rateio da parcela: " + moeda(parcela / estimativa.kmMedio) + "/km." : "";
+  document.getElementById("analiseEstimativaMensal").textContent =
+    "Projeção: " + decimal(estimativa.kmMin) + " a " + decimal(estimativa.kmMax) +
+    " km/mês; referência aplicada: " + decimal(estimativa.kmMedio) +
+    " km/mês." + rateio + " Ajuste os valores se sua rotina mudar.";
+  document.getElementById("resultadoAnalise").hidden = true;
+  salvarPreferenciasAnalise();
+}
 
 function calcularAnaliseCorrida(dados) {
   const numeros = [
@@ -1196,7 +1254,9 @@ function carregarPreferenciasAnalise() {
         const valor = Number(salvo[id]);
         if (salvo[id] !== undefined && salvo[id] !== null && salvo[id] !== "" &&
             Number.isFinite(valor) && valor >= 0 &&
-            (id !== "analiseConsumo" || valor > 0)) {
+            (id !== "analiseConsumo" || valor > 0) &&
+            (!["analiseKmDiaMin", "analiseKmDiaMax"].includes(id) || valor > 0) &&
+            (id !== "analiseDiasMes" || (Number.isInteger(valor) && valor >= 1 && valor <= 31))) {
           document.getElementById(id).value = String(valor);
         }
       });
@@ -1322,6 +1382,12 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   document.getElementById("formAnalise").addEventListener("change", function() {
     document.getElementById("resultadoAnalise").hidden = true;
+  });
+  ["analiseKmDiaMin", "analiseKmDiaMax", "analiseDiasMes"].forEach(id => {
+    document.getElementById(id).addEventListener("input", function() {
+      document.getElementById("analiseEstimativaMensal").textContent =
+        "Toque em Calcular km mensais pela média para atualizar a projeção.";
+    });
   });
 
   document.getElementById("dataLancamento").value = hoje();
