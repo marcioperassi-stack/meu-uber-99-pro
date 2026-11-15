@@ -32,10 +32,14 @@ jobs:
           java-version: '17'
 
       - name: Preparar Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Instalar plataforma Android
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        shell: bash
+        run: |
+          echo "SDK: $ANDROID_HOME"
+          SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          if [ -z "$SDK_MANAGER" ]; then
+            echo "sdkmanager não encontrado"; exit 1
+          fi
+          "$SDK_MANAGER" --install "platforms;android-35" "build-tools;35.0.0"
 
       - name: Preparar Gradle
         uses: gradle/actions/setup-gradle@v4
