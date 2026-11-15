@@ -1148,15 +1148,16 @@ function salvarPreferenciasAnalise() {
 function carregarPreferenciasAnalise() {
   try {
     const salvo = JSON.parse(localStorage.getItem(CHAVE_ANALISE) || "null");
-    if (!salvo || typeof salvo !== "object") return;
-    CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
-      const valor = Number(salvo[id]);
-      if (salvo[id] !== undefined && salvo[id] !== null && salvo[id] !== "" &&
-          Number.isFinite(valor) && valor >= 0 &&
-          (id !== "analiseConsumo" || valor > 0)) {
-        document.getElementById(id).value = String(valor);
-      }
-    });
+    if (salvo && typeof salvo === "object") {
+      CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
+        const valor = Number(salvo[id]);
+        if (salvo[id] !== undefined && salvo[id] !== null && salvo[id] !== "" &&
+            Number.isFinite(valor) && valor >= 0 &&
+            (id !== "analiseConsumo" || valor > 0)) {
+          document.getElementById(id).value = String(valor);
+        }
+      });
+    }
     // Aplicação única do perfil informado pelo motorista; depois, respeita edições futuras.
     if (localStorage.getItem(CHAVE_PERFIL_ETANOL) !== "1") {
       document.getElementById("analiseCombustivel").value = "3.62";
