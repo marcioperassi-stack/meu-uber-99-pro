@@ -446,13 +446,13 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
       <p><strong>Veículo de referência: Renault Sandero 2021 · 1.0 · etanol</strong></p>
       <p class="muted">No Inmetro 2021: etanol na cidade, 9,0 km/l (Zen) ou 9,1 km/l (Life). O consumo real pode variar. Use o botão para aplicar a referência urbana de 9,0 km/l.</p>
       <div class="linha-botoes" style="margin-bottom:14px">
-        <button type="button" class="btn secundario" onclick="aplicarReferenciaSandero()">Usar referência do Sandero (9,0 km/l)</button>
+        <button type="button" class="btn secundario" onclick="aplicarReferenciaSandero()">Usar configuração do Sandero (etanol R$ 3,62)</button>
       </div>
-      <p class="muted">O preço do etanol deve ser o que você paga no posto. Se ainda aparecer R$ 6,00 da versão de teste, substitua pelo valor correto.</p>
+      <p class="muted">Etanol informado: <strong>R$ 3,62/l</strong>. Atualize este valor quando mudar o preço no posto.</p>
       <div class="analise-campos">
         <div>
           <label for="analiseCombustivel">Preço do etanol por litro (R$)</label>
-          <input type="number" id="analiseCombustivel" min="0.01" step="0.01" placeholder="Informe o preço pago no posto" required>
+          <input type="number" id="analiseCombustivel" min="0.01" step="0.01" value="3.62" placeholder="Informe o preço pago no posto" required>
         </div>
         <div>
           <label for="analiseConsumo">Consumo urbano com etanol (km por litro)</label>
@@ -1089,16 +1089,13 @@ function restaurarBackup() {
 
 /* Analise manual: nenhum dado de ofertas externas e acessado automaticamente. */
 function aplicarReferenciaSandero() {
-  const consumo = document.getElementById("analiseConsumo");
-  consumo.value = "9.0";
+  document.getElementById("analiseConsumo").value = "9.0";
+  document.getElementById("analiseCombustivel").value = "3.62";
   document.getElementById("resultadoAnalise").hidden = true;
-  const preco = document.getElementById("analiseCombustivel");
-  if (!preco.value || Number(preco.value) === 6) {
-    preco.value = "";
-    preco.focus();
-  }
+  salvarPreferenciasAnalise();
 }
 const CHAVE_ANALISE = "MEU_UBER_99_PRO_ANALISE_V1";
+const CHAVE_PERFIL_ETANOL = "MEU_UBER_99_PRO_SANDERO_ETANOL_V1";
 const CAMPOS_PREFERENCIAS_ANALISE = [
   "analiseCombustivel", "analiseConsumo", "analiseDesgaste",
   "analiseMetaKm", "analiseMetaHora"
@@ -1136,6 +1133,18 @@ function calcularAnaliseCorrida(dados) {
   };
 }
 
+function salvarPreferenciasAnalise() {
+  try {
+    const preferencias = {};
+    CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
+      preferencias[id] = document.getElementById(id).value;
+    });
+    localStorage.setItem(CHAVE_ANALISE, JSON.stringify(preferencias));
+  } catch (e) {
+    /* O analisador funciona mesmo sem armazenamento local. */
+  }
+}
+
 function carregarPreferenciasAnalise() {
   try {
     const salvo = JSON.parse(localStorage.getItem(CHAVE_ANALISE) || "null");
@@ -1148,8 +1157,15 @@ function carregarPreferenciasAnalise() {
         document.getElementById(id).value = String(valor);
       }
     });
+    // Aplicação única do perfil informado pelo motorista; depois, respeita edições futuras.
+    if (localStorage.getItem(CHAVE_PERFIL_ETANOL) !== "1") {
+      document.getElementById("analiseCombustivel").value = "3.62";
+      document.getElementById("analiseConsumo").value = "9.0";
+      salvarPreferenciasAnalise();
+      localStorage.setItem(CHAVE_PERFIL_ETANOL, "1");
+    }
   } catch (e) {
-    /* Sem preferencias salvas: continuam valendo os exemplos do formulario. */
+    /* Sem armazenamento: continuam valendo os valores padrão do formulário. */
   }
 }
 
@@ -1183,15 +1199,7 @@ function analisarCorrida(evento) {
     return;
   }
 
-  try {
-    const preferencias = {};
-    CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
-      preferencias[id] = document.getElementById(id).value;
-    });
-    localStorage.setItem(CHAVE_ANALISE, JSON.stringify(preferencias));
-  } catch (e) {
-    /* A simulacao funciona mesmo sem armazenamento. */
-  }
+  salvarPreferenciasAnalise();
 
   const area = document.getElementById("resultadoAnalise");
   const app = document.getElementById("analiseApp").value;
