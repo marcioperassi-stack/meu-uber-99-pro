@@ -10,7 +10,7 @@ android {
     productFlavors {
         create("demo") {
             dimension = "modo"
-            applicationIdSuffix = ".demo"
+            applicationIdSuffix = ".print"
             versionNameSuffix = "-demo-sem-acessibilidade"
         }
         create("automatico") {
