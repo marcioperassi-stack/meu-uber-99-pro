@@ -1,11 +1,10 @@
 package br.com.meuuber99pro.copiloto
 
-import java.time.LocalDate
 import java.util.Locale
 
 /**
  * Motor de cálculo INDEPENDENTE da leitura da tela.
- * Valores iniciais iguais aos do analisador web; o APK piloto ainda não sincroniza preferências.
+ * Metas fixas de faturamento bruto: R$ 1,70/km E R$ 40/h.
  * Nenhum dado de corrida é salvo ou enviado.
  */
 object OfferEngine {
@@ -20,9 +19,7 @@ object OfferEngine {
     data class Assessment(
         val good: Boolean,
         val grossPerHour: Double,
-        val netPerHour: Double,
-        val netPerKm: Double,
-        val netAmount: Double
+        val grossPerKm: Double
     ) {
         val label: String get() = if (good) "CORRIDA BOA" else "CORRIDA RUIM"
     }
@@ -75,25 +72,21 @@ object OfferEngine {
         (o.pickupMinutes + o.tripMinutes) > 0 &&
         (o.pickupMinutes + o.tripMinutes) <= 240
 
-    /** Cálculo de referência — preço, consumo, desgaste, financiamento e metas são provisórios. */
-    fun evaluate(offer: Offer, daysInMonth: Int = LocalDate.now().lengthOfMonth()): Assessment? {
-        if (!isValid(offer) || daysInMonth !in 28..31) return null
-        val km = offer.pickupKm + offer.tripKm
-        val hours = (offer.pickupMinutes + offer.tripMinutes) / 60.0
-        val fuelCost = km / 9.0 * 3.62
-        val wearCost = km * 0.25
-        val financeReserve = km / (300.0 * daysInMonth) * 2252.0
-        val net = offer.fare - fuelCost - wearCost - financeReserve
-        val grossHourly = offer.fare / hours
-        val netHourly = net / hours
-        val netKm = net / km
+    const val MIN_GROSS_PER_KM = 1.70
+    const val MIN_GROSS_PER_HOUR = 40.0
+
+    /** Analisa apenas o faturamento bruto incluindo busca e viagem, sem deduzir custos. */
+    fun evaluate(offer: Offer): Assessment? {
+        if (!isValid(offer)) return null
+        val totalKm = offer.pickupKm + offer.tripKm
+        val totalHours = (offer.pickupMinutes + offer.tripMinutes) / 60.0
+        val grossHourly = offer.fare / totalHours
+        val grossKm = offer.fare / totalKm
         return Assessment(
-            good = net > 0 && grossHourly >= 40.0 &&
-                netHourly >= 25.0 && netKm >= 1.0,
+            good = grossHourly + 1e-9 >= MIN_GROSS_PER_HOUR &&
+                grossKm + 1e-9 >= MIN_GROSS_PER_KM,
             grossPerHour = grossHourly,
-            netPerHour = netHourly,
-            netPerKm = netKm,
-            netAmount = net
+            grossPerKm = grossKm
         )
     }
 

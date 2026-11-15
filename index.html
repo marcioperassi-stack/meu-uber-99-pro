@@ -420,9 +420,9 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
 <section id="analisador" class="page">
   <h2>Analisar corrida</h2>
   <div class="card analise-aviso">
-    <strong>Só funciona quando você pedir.</strong>
-    <p class="muted">Informe os dados da oferta e toque em <strong>Analisar corrida</strong>. O aplicativo não lê ofertas da Uber/99, não aceita corridas e não controla o Waze.</p>
-    <p class="muted">Por segurança, preencha os campos apenas com o veículo parado.</p>
+    <strong>Você decide quando analisar.</strong>
+    <p class="muted">Digite os dados da proposta da Uber ou 99 e toque em <strong>Analisar corrida</strong>. Esta versão web não lê ofertas automaticamente nem aceita corridas.</p>
+    <p class="muted">Preencha os campos apenas com o veículo parado.</p>
   </div>
 
   <form id="formAnalise" onsubmit="analisarCorrida(event)">
@@ -443,104 +443,26 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
         </div>
         <div>
           <label for="analiseKmBusca">Km até buscar o passageiro</label>
-          <input type="number" id="analiseKmBusca" min="0" step="0.1" value="0" required>
+          <input type="number" id="analiseKmBusca" min="0" step="any" value="0" required>
         </div>
         <div>
           <label for="analiseKmCorrida">Km com o passageiro</label>
-          <input type="number" id="analiseKmCorrida" min="0.1" step="0.1" placeholder="Ex.: 10" required>
+          <input type="number" id="analiseKmCorrida" min="0.01" step="any" placeholder="Ex.: 10" required>
         </div>
         <div>
           <label for="analiseMinBusca">Minutos até o passageiro</label>
-          <input type="number" id="analiseMinBusca" min="0" step="1" value="0" required>
+          <input type="number" id="analiseMinBusca" min="0" step="any" value="0" required>
         </div>
         <div>
           <label for="analiseMinCorrida">Duração prevista da corrida (minutos)</label>
-          <input type="number" id="analiseMinCorrida" min="1" step="1" placeholder="Ex.: 25" required>
-        </div>
-        <div>
-          <label for="analisePedagio">Pedágio ou gasto extra não reembolsado (R$)</label>
-          <input type="number" id="analisePedagio" min="0" step="0.01" value="0" required>
+          <input type="number" id="analiseMinCorrida" min="0.01" step="any" placeholder="Ex.: 25" required>
         </div>
       </div>
     </div>
-
     <div class="card">
-      <h3>2. Custos do seu carro</h3>
-      <p><strong>Veículo de referência: Renault Sandero 2021 · 1.0 · etanol</strong></p>
-      <p class="muted">No Inmetro 2021: etanol na cidade, 9,0 km/l (Zen) ou 9,1 km/l (Life). O consumo real pode variar. Use o botão para aplicar a referência urbana de 9,0 km/l.</p>
-      <div class="linha-botoes" style="margin-bottom:14px">
-        <button type="button" class="btn secundario" onclick="aplicarReferenciaSandero()">Usar configuração do Sandero (etanol R$ 3,62)</button>
-      </div>
-      <p class="muted">Etanol informado: <strong>R$ 3,62/l</strong>. Atualize este valor quando mudar o preço no posto.</p>
-      <div class="analise-campos">
-        <div>
-          <label for="analiseCombustivel">Preço do etanol por litro (R$)</label>
-          <input type="number" id="analiseCombustivel" min="0.01" step="0.01" value="3.62" placeholder="Informe o preço pago no posto" required>
-        </div>
-        <div>
-          <label for="analiseConsumo">Consumo urbano com etanol (km por litro)</label>
-          <input type="number" id="analiseConsumo" min="0.1" step="0.1" value="9.0" required>
-        </div>
-        <div>
-          <label for="analiseDesgaste">Manutenção e desgaste por km (R$)</label>
-          <input type="number" id="analiseDesgaste" min="0" step="0.01" value="0.25" required>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3>3. Financiamento (despesa fixa mensal)</h3>
-      <p class="muted">A parcela é um compromisso mensal de caixa, não um custo variável do carro. Para distribuir seu valor pelas corridas, informe quantos quilômetros de trabalho você prevê rodar no mês.</p>
-      <div class="analise-campos">
-        <div>
-          <label for="analiseParcela">Parcela mensal do Sandero (R$)</label>
-          <input type="number" id="analiseParcela" min="0" step="0.01" value="2252.00" required>
-        </div>
-        <div>
-          <label for="analiseKmMensais">Km de trabalho previstos por mês (opcional)</label>
-          <input type="number" id="analiseKmMensais" min="1" step="1" placeholder="Informe sua previsão real de km">
-        </div>
-      </div>
-      <div class="separador"></div>
-      <h3>Estime os km mensais pela sua rotina</h3>
-      <p class="muted">Você roda entre 250 e 350 km por dia e informou que trabalha todos os dias. O aplicativo usa inicialmente os dias do mês atual e a média de 300 km/dia. Se folgar, ajuste os dias trabalhados.</p>
-      <div class="analise-campos">
-        <div>
-          <label for="analiseKmDiaMin">Km por dia — menor média</label>
-          <input type="number" id="analiseKmDiaMin" min="1" step="1" value="250">
-        </div>
-        <div>
-          <label for="analiseKmDiaMax">Km por dia — maior média</label>
-          <input type="number" id="analiseKmDiaMax" min="1" step="1" value="350">
-        </div>
-        <div>
-          <label for="analiseDiasMes">Dias trabalhados no mês (rotina: todos os dias)</label>
-          <input type="number" id="analiseDiasMes" min="1" max="31" step="1" placeholder="Dias do mês atual">
-        </div>
-      </div>
-      <button type="button" class="btn secundario" onclick="aplicarEstimativaMensal()">Calcular km mensais pela média</button>
-      <p id="analiseEstimativaMensal" class="muted" role="status" aria-live="polite">Calculando a projeção do mês atual com sua rotina diária.</p>
-      <p class="analise-discreto">Sem os quilômetros mensais, o aplicativo mostra o resultado antes da parcela, mas não classifica a corrida como dentro das metas. O financiamento não é registrado automaticamente nos lançamentos e pode incluir amortização de dívida, não apenas despesa contábil.</p>
-    </div>
-
-    <div class="card">
-      <h3>4. Suas metas para avaliar a corrida</h3>
-      <p class="muted">A oferta só é considerada boa quando alcançar pelo menos <strong>R$ 40 por hora de faturamento</strong> e também as metas de sobra após custos.</p>
-      <div class="analise-campos">
-        <div>
-          <label for="analiseMetaHoraBruta">Faturamento mínimo por hora (R$)</label>
-          <input type="number" id="analiseMetaHoraBruta" min="0" step="0.01" value="40.00" required>
-        </div>
-        <div>
-          <label for="analiseMetaKm">Lucro mínimo por km rodado (R$)</label>
-          <input type="number" id="analiseMetaKm" min="0" step="0.01" value="1.00" required>
-        </div>
-        <div>
-          <label for="analiseMetaHora">Sobra mínima por hora após custos (R$)</label>
-          <input type="number" id="analiseMetaHora" min="0" step="0.01" value="25.00" required>
-        </div>
-      </div>
-      <p class="analise-discreto">Faturamento por hora = valor da corrida dividido pela soma do tempo de busca e do tempo de viagem. A sobra por hora desconta custos do carro e, quando calculado, o rateio do financiamento.</p>
+      <h3>2. Metas de faturamento bruto</h3>
+      <p>🟢 <strong>R$ 1,70 por km</strong> e <strong>R$ 40,00 por hora</strong>, no mínimo. As duas condições precisam ser atingidas.</p>
+      <p class="analise-discreto">Os km e minutos incluem tanto o caminho até o passageiro quanto a viagem. O analisador não desconta combustível, manutenção, financiamento, pedágios ou outros custos.</p>
       <button class="btn" type="submit">Analisar corrida</button>
     </div>
   </form>
@@ -552,44 +474,16 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
     </div>
     <div class="grid">
       <div class="metric destaque">
-        <div class="nome">Faturamento bruto por hora</div>
-        <div class="valor" id="analiseBrutoPorHora"></div>
-      </div>
-      <div class="metric destaque">
-        <div class="nome">Sobra antes do financiamento</div>
-        <div class="valor" id="analiseLucro"></div>
-      </div>
-      <div class="metric">
-        <div class="nome" id="analiseRotuloKm">Sobra por km total</div>
+        <div class="nome">Faturamento bruto por km</div>
         <div class="valor" id="analisePorKm"></div>
       </div>
-      <div class="metric">
-        <div class="nome" id="analiseRotuloHora">Sobra por hora total</div>
+      <div class="metric destaque">
+        <div class="nome">Faturamento bruto por hora</div>
         <div class="valor" id="analisePorHora"></div>
       </div>
-      <div class="metric">
-        <div class="nome">Custos variáveis estimados</div>
-        <div class="valor" id="analiseCustos"></div>
-      </div>
     </div>
-    <p id="analiseMetaBrutaAviso"></p>
     <p id="analiseDetalhes"></p>
-    <div id="analiseBlocoParcela">
-      <p><strong>Parcela mensal: <span id="analiseParcelaMensal"></span></strong></p>
-      <p id="analiseAvisoParcela"></p>
-      <div class="grid" id="analiseRateioResultado" hidden>
-        <div class="metric">
-          <div class="nome">Parcela alocada à corrida</div>
-          <div class="valor" id="analiseParcelaCorrida"></div>
-        </div>
-        <div class="metric destaque">
-          <div class="nome">Sobra após o rateio da parcela</div>
-          <div class="valor" id="analiseSaldoComParcela"></div>
-        </div>
-      </div>
-    </div>
-    <p><span id="analiseRotuloMinima">Oferta mínima estimada para bater suas metas</span>: <strong id="analiseMinima"></strong></p>
-    <p class="analise-discreto">Estimativa, não garantia: considera ida até o passageiro, percurso, tempo, combustível, manutenção e gastos extras informados. Não inclui impostos, tempo parado, retorno sem passageiro nem outros custos não preenchidos. A decisão é sempre sua.</p>
+    <p class="analise-discreto">Veredito baseado exclusivamente no valor bruto ofertado, na distância e no tempo total. Não mede lucro líquido. A decisão de aceitar a corrida é sempre sua.</p>
   </div>
 </section>
 
@@ -1171,273 +1065,60 @@ function restaurarBackup() {
 }
 
 
-/* Analise manual: nenhum dado de ofertas externas e acessado automaticamente. */
-function aplicarReferenciaSandero() {
-  document.getElementById("analiseConsumo").value = "9.0";
-  document.getElementById("analiseCombustivel").value = "3.62";
-  document.getElementById("resultadoAnalise").hidden = true;
-  salvarPreferenciasAnalise();
-}
-const CHAVE_ANALISE = "MEU_UBER_99_PRO_ANALISE_V1";
-const CHAVE_PERFIL_ETANOL = "MEU_UBER_99_PRO_SANDERO_ETANOL_V1";
-const CHAVE_ROTINA_DIARIA_MES = "MEU_UBER_99_PRO_ROTINA_TODOS_DIAS_MES_V1";
-const CAMPOS_PREFERENCIAS_ANALISE = [
-  "analiseCombustivel", "analiseConsumo", "analiseDesgaste",
-  "analiseMetaKm", "analiseMetaHora", "analiseMetaHoraBruta", "analiseParcela", "analiseKmMensais",
-  "analiseKmDiaMin", "analiseKmDiaMax", "analiseDiasMes"
-];
-
-function calcularEstimativaMensal(minKmDia, maxKmDia, dias) {
-  if (![minKmDia, maxKmDia, dias].every(Number.isFinite) ||
-      minKmDia <= 0 || maxKmDia < minKmDia ||
-      !Number.isInteger(dias) || dias < 1 || dias > 31) {
-    throw new Error("Confira os km por dia e informe entre 1 e 31 dias trabalhados no mês.");
-  }
-  const kmMin = minKmDia * dias;
-  const kmMax = maxKmDia * dias;
-  const kmMedio = (kmMin + kmMax) / 2;
-  return { kmMin, kmMax, kmMedio };
-}
-
-function aplicarEstimativaMensal() {
-  const get = id => {
-    const valor = document.getElementById(id).value.trim();
-    return valor === "" ? NaN : Number(valor);
-  };
-  let estimativa;
-  try {
-    estimativa = calcularEstimativaMensal(
-      get("analiseKmDiaMin"), get("analiseKmDiaMax"), get("analiseDiasMes")
-    );
-  } catch (erro) {
-    document.getElementById("analiseEstimativaMensal").textContent = erro.message;
-    return;
-  }
-  document.getElementById("analiseKmMensais").value = String(estimativa.kmMedio);
-  const parcela = get("analiseParcela");
-  const rateio = Number.isFinite(parcela) && parcela >= 0 ?
-    " Rateio da parcela: " + moeda(parcela / estimativa.kmMedio) + "/km." : "";
-  document.getElementById("analiseEstimativaMensal").textContent =
-    "Projeção: " + decimal(estimativa.kmMin) + " a " + decimal(estimativa.kmMax) +
-    " km/mês; referência aplicada: " + decimal(estimativa.kmMedio) +
-    " km/mês." + rateio + " Ajuste os valores se sua rotina mudar.";
-  document.getElementById("resultadoAnalise").hidden = true;
-  salvarPreferenciasAnalise();
-}
-
-function inicializarRotinaDiaria() {
-  const agora = new Date();
-  const mesAtual = String(agora.getFullYear()) + "-" +
-    String(agora.getMonth() + 1).padStart(2, "0");
-  const diasNoMes = new Date(
-    agora.getFullYear(), agora.getMonth() + 1, 0
-  ).getDate();
-  const dias = document.getElementById("analiseDiasMes");
-  const kmMensais = document.getElementById("analiseKmMensais");
-  let mesSalvo = null;
-  try {
-    mesSalvo = localStorage.getItem(CHAVE_ROTINA_DIARIA_MES);
-  } catch (erro) {
-    /* Armazenamento pode estar desativado; o cálculo permanece disponível. */
-  }
-
-  // Atualiza só na primeira aplicação ou na virada do mês.
-  // Depois respeita mudanças manuais feitas durante o mesmo mês.
-  if (mesSalvo !== mesAtual || !dias.value || !kmMensais.value) {
-    dias.value = String(diasNoMes);
-    aplicarEstimativaMensal();
-    try {
-      localStorage.setItem(CHAVE_ROTINA_DIARIA_MES, mesAtual);
-    } catch (erro) {
-      /* Sem persistência: continua sendo possível calcular. */
-    }
-  } else {
-    const info = document.getElementById("analiseEstimativaMensal");
-    info.textContent = "Sua previsão salva para este mês: " +
-      decimal(Number(kmMensais.value)) + " km. " +
-      "Toque em Calcular km mensais pela média se alterar sua rotina.";
-  }
-}
+/* Análise manual somente pelo faturamento bruto. Não altera os lançamentos financeiros. */
+const META_BRUTA_KM = 1.70;
+const META_BRUTA_HORA = 40.00;
 
 function calcularAnaliseCorrida(dados) {
-  const numeros = [
-    dados.valor, dados.kmBusca, dados.kmCorrida, dados.minBusca,
-    dados.minCorrida, dados.pedagio, dados.combustivel, dados.consumo,
-    dados.desgaste, dados.metaKm, dados.metaHora, dados.metaHoraBruta, dados.parcela
-  ];
-  if (!numeros.every(Number.isFinite) || numeros.some(n => n < 0) ||
-      dados.valor <= 0 || dados.kmCorrida <= 0 ||
-      dados.minCorrida <= 0 || dados.consumo <= 0 ||
-      (dados.kmMensais !== null &&
-        (!Number.isFinite(dados.kmMensais) || dados.kmMensais <= 0))) {
-    throw new Error("Confira os valores informados, inclusive a parcela e a previsão de km mensais.");
+  const valores = [dados.valor, dados.kmBusca, dados.kmCorrida, dados.minBusca, dados.minCorrida];
+  if (!valores.every(Number.isFinite) || valores.some(n => n < 0) ||
+      dados.valor <= 0 || dados.kmCorrida <= 0 || dados.minCorrida <= 0) {
+    throw new Error("Confira o valor, as distâncias e os tempos da oferta.");
   }
-
   const kmTotal = dados.kmBusca + dados.kmCorrida;
   const minutosTotal = dados.minBusca + dados.minCorrida;
-  const horasTotal = minutosTotal / 60;
-  const custoCombustivel = kmTotal / dados.consumo * dados.combustivel;
-  const custoDesgaste = kmTotal * dados.desgaste;
-  const custoTotal = custoCombustivel + custoDesgaste + dados.pedagio;
-  const lucroEstimado = dados.valor - custoTotal;
-  const temRateio = dados.kmMensais !== null;
-  const precisaKmMensais = dados.parcela > 0 && !temRateio;
-  const custoParcelaRateado = temRateio ? dados.parcela / dados.kmMensais * kmTotal : 0;
-  const saldoComParcela = lucroEstimado - custoParcelaRateado;
-  const valorParaMetas = temRateio || dados.parcela === 0 ? saldoComParcela : lucroEstimado;
-  const lucroPorKm = valorParaMetas / kmTotal;
-  const lucroPorHora = valorParaMetas / horasTotal;
-  const faturamentoPorHora = dados.valor / horasTotal;
-  const atendeMetaBruta = faturamentoPorHora + 1e-9 >= dados.metaHoraBruta;
-  const ofertaMinima = precisaKmMensais ? null :
-    Math.max(
-      dados.metaHoraBruta * horasTotal,
-      custoTotal + custoParcelaRateado +
-        Math.max(dados.metaKm * kmTotal, dados.metaHora * horasTotal)
-    );
-  const atendeMetas = !precisaKmMensais && valorParaMetas > 0 &&
-    atendeMetaBruta &&
-    lucroPorKm + 1e-9 >= dados.metaKm && lucroPorHora + 1e-9 >= dados.metaHora;
-
-  return {
-    kmTotal, minutosTotal, custoCombustivel, custoDesgaste,
-    custoTotal, lucroEstimado, lucroPorKm, lucroPorHora,
-    faturamentoPorHora, atendeMetaBruta, ofertaMinima, atendeMetas, temRateio, precisaKmMensais,
-    custoParcelaRateado, saldoComParcela
-  };
-}
-
-function salvarPreferenciasAnalise() {
-  try {
-    const preferencias = {};
-    CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
-      preferencias[id] = document.getElementById(id).value;
-    });
-    localStorage.setItem(CHAVE_ANALISE, JSON.stringify(preferencias));
-  } catch (e) {
-    /* O analisador funciona mesmo sem armazenamento local. */
-  }
-}
-
-function carregarPreferenciasAnalise() {
-  try {
-    const salvo = JSON.parse(localStorage.getItem(CHAVE_ANALISE) || "null");
-    if (salvo && typeof salvo === "object") {
-      CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
-        const valor = Number(salvo[id]);
-        if (salvo[id] !== undefined && salvo[id] !== null && salvo[id] !== "" &&
-            Number.isFinite(valor) && valor >= 0 &&
-            (id !== "analiseConsumo" || valor > 0) &&
-            (!["analiseKmDiaMin", "analiseKmDiaMax"].includes(id) || valor > 0) &&
-            (id !== "analiseDiasMes" || (Number.isInteger(valor) && valor >= 1 && valor <= 31))) {
-          document.getElementById(id).value = String(valor);
-        }
-      });
-    }
-    // Aplicação única do perfil informado pelo motorista; depois, respeita edições futuras.
-    if (localStorage.getItem(CHAVE_PERFIL_ETANOL) !== "1") {
-      document.getElementById("analiseCombustivel").value = "3.62";
-      document.getElementById("analiseConsumo").value = "9.0";
-      salvarPreferenciasAnalise();
-      localStorage.setItem(CHAVE_PERFIL_ETANOL, "1");
-    }
-  } catch (e) {
-    /* Sem armazenamento: continuam valendo os valores padrão do formulário. */
-  }
+  const brutoPorKm = dados.valor / kmTotal;
+  const brutoPorHora = dados.valor / (minutosTotal / 60);
+  const atendeKm = brutoPorKm + 1e-9 >= META_BRUTA_KM;
+  const atendeHora = brutoPorHora + 1e-9 >= META_BRUTA_HORA;
+  return { kmTotal, minutosTotal, brutoPorKm, brutoPorHora, atendeKm, atendeHora,
+    atendeMetas: atendeKm && atendeHora };
 }
 
 function analisarCorrida(evento) {
   evento.preventDefault();
-  const ids = {
-    valor: "analiseValor",
-    kmBusca: "analiseKmBusca",
-    kmCorrida: "analiseKmCorrida",
-    minBusca: "analiseMinBusca",
-    minCorrida: "analiseMinCorrida",
-    pedagio: "analisePedagio",
-    combustivel: "analiseCombustivel",
-    consumo: "analiseConsumo",
-    desgaste: "analiseDesgaste",
-    metaKm: "analiseMetaKm",
-    metaHora: "analiseMetaHora",
-    metaHoraBruta: "analiseMetaHoraBruta",
-    parcela: "analiseParcela",
-    kmMensais: "analiseKmMensais"
+  const campo = id => {
+    const texto = document.getElementById(id).value.trim();
+    return texto === "" ? NaN : Number(texto);
   };
-  const dados = {};
-  Object.keys(ids).forEach(chave => {
-    const texto = document.getElementById(ids[chave]).value.trim();
-    dados[chave] = (chave === "kmMensais" && texto === "") ? null :
-      (texto === "" ? NaN : Number(texto));
-  });
-
   let resultado;
   try {
-    resultado = calcularAnaliseCorrida(dados);
-  } catch (e) {
-    alert(e.message);
+    resultado = calcularAnaliseCorrida({
+      valor: campo("analiseValor"),
+      kmBusca: campo("analiseKmBusca"),
+      kmCorrida: campo("analiseKmCorrida"),
+      minBusca: campo("analiseMinBusca"),
+      minCorrida: campo("analiseMinCorrida")
+    });
+  } catch (erro) {
+    alert(erro.message);
     document.getElementById("resultadoAnalise").hidden = true;
     return;
   }
-
-  salvarPreferenciasAnalise();
-
   const area = document.getElementById("resultadoAnalise");
   const app = document.getElementById("analiseApp").value;
-  const perdeuDinheiro = resultado.precisaKmMensais ? false :
-    (resultado.temRateio ? resultado.saldoComParcela <= 0 : resultado.lucroEstimado <= 0);
-  // O aviso verde exige todas as metas; sem rateio disponível, sinaliza pendência.
-  area.dataset.status = resultado.precisaKmMensais ? "pendente" :
-    (resultado.atendeMetas ? "bom" : "ruim");
+  area.dataset.status = resultado.atendeMetas ? "bom" : "ruim";
   document.getElementById("analiseVeredito").textContent =
-    resultado.precisaKmMensais ? "⚠️ ANÁLISE INCOMPLETA" :
     resultado.atendeMetas ? "✅ CORRIDA BOA" : "❌ CORRIDA RUIM";
   document.getElementById("analiseMensagem").textContent =
-    app + ": " + (resultado.precisaKmMensais
-      ? "a parcela está registrada, mas ainda falta sua previsão de quilômetros mensais para avaliar as metas incluindo o financiamento."
-      : perdeuDinheiro
-        ? "o valor não cobre os custos estimados considerados."
-        : resultado.atendeMetas
-          ? "o faturamento por hora e as duas metas de sobra após custos foram atingidos."
-          : !resultado.atendeMetaBruta
-            ? "o faturamento por hora ficou abaixo do mínimo, antes mesmo de descontar custos."
-            : "o faturamento por hora passou, mas alguma meta de sobra após custos não foi atingida.");
-  document.getElementById("analiseBrutoPorHora").textContent = moeda(resultado.faturamentoPorHora) + "/h";
-  document.getElementById("analiseMetaBrutaAviso").textContent =
-    (resultado.atendeMetaBruta ? "Meta de faturamento por hora atingida: " :
-      "Abaixo da meta de faturamento por hora: ") +
-    moeda(resultado.faturamentoPorHora) + "/h (mínimo " + moeda(dados.metaHoraBruta) + "/h).";
-  document.getElementById("analiseLucro").textContent = moeda(resultado.lucroEstimado);
-  document.getElementById("analisePorKm").textContent = moeda(resultado.lucroPorKm);
-  document.getElementById("analisePorHora").textContent = moeda(resultado.lucroPorHora);
-  document.getElementById("analiseCustos").textContent = moeda(resultado.custoTotal);
-  document.getElementById("analiseRotuloKm").textContent =
-    resultado.temRateio ? "Sobra por km após rateio" : "Sobra por km antes da parcela";
-  document.getElementById("analiseRotuloHora").textContent =
-    resultado.temRateio ? "Sobra por hora após rateio" : "Sobra por hora antes da parcela";
-  document.getElementById("analiseMinima").textContent =
-    resultado.ofertaMinima === null ? "Aguardando km mensais" : moeda(resultado.ofertaMinima);
-  document.getElementById("analiseRotuloMinima").textContent =
-    resultado.temRateio ? "Oferta mínima incluindo o rateio da parcela e a meta por hora" :
-    "Oferta mínima estimada para atingir as três metas";
+    app + ": " + (resultado.atendeMetas
+      ? "atingiu R$ 1,70/km e R$ 40,00/h de faturamento bruto."
+      : "não atingiu as duas metas de faturamento bruto.");
+  document.getElementById("analisePorKm").textContent = moeda(resultado.brutoPorKm) + "/km";
+  document.getElementById("analisePorHora").textContent = moeda(resultado.brutoPorHora) + "/h";
   document.getElementById("analiseDetalhes").textContent =
-    "Distância total: " + decimal(resultado.kmTotal) + " km. Tempo total: " +
-    decimal(resultado.minutosTotal) + " min. Combustível: " +
-    moeda(resultado.custoCombustivel) + ". Manutenção/desgaste: " +
-    moeda(resultado.custoDesgaste) + ". Outros gastos: " + moeda(dados.pedagio) + ".";
-  document.getElementById("analiseParcelaMensal").textContent = moeda(dados.parcela);
-  const blocoRateio = document.getElementById("analiseRateioResultado");
-  blocoRateio.hidden = !resultado.temRateio;
-  document.getElementById("analiseParcelaCorrida").textContent =
-    moeda(resultado.custoParcelaRateado);
-  document.getElementById("analiseSaldoComParcela").textContent =
-    moeda(resultado.saldoComParcela);
-  document.getElementById("analiseAvisoParcela").textContent =
-    resultado.precisaKmMensais
-      ? "A parcela ainda não entrou no resultado da corrida. Preencha os km mensais para calcular quanto reservar desta oferta."
-      : resultado.temRateio
-        ? "Rateio de planejamento: parcela ÷ km mensais previstos × km desta oferta. Não representa necessariamente custo contábil."
-        : "Sem parcela mensal informada: a oferta é analisada apenas com custos variáveis.";
+    "Distância total (busca + viagem): " + decimal(resultado.kmTotal) +
+    " km. Tempo total (busca + viagem): " + decimal(resultado.minutosTotal) + " min.";
   area.hidden = false;
 }
 
@@ -1457,21 +1138,12 @@ function aba(id, botao) {
 
 document.addEventListener("DOMContentLoaded", function() {
   carregarDados();
-  carregarPreferenciasAnalise();
-  inicializarRotinaDiaria();
   document.getElementById("formAnalise").addEventListener("input", function() {
     document.getElementById("resultadoAnalise").hidden = true;
   });
   document.getElementById("formAnalise").addEventListener("change", function() {
     document.getElementById("resultadoAnalise").hidden = true;
   });
-  ["analiseKmDiaMin", "analiseKmDiaMax", "analiseDiasMes"].forEach(id => {
-    document.getElementById(id).addEventListener("input", function() {
-      document.getElementById("analiseEstimativaMensal").textContent =
-        "Toque em Calcular km mensais pela média para atualizar a projeção.";
-    });
-  });
-
   document.getElementById("dataLancamento").value = hoje();
 
   const mesAtual = hoje().slice(0, 7);

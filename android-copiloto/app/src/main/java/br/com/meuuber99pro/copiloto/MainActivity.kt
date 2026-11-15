@@ -58,8 +58,8 @@ class MainActivity : Activity() {
         container.addView(label("Copiloto Android — protótipo experimental", 18f))
         container.addView(label(
             "Objetivo: avisar CORRIDA BOA ou CORRIDA RUIM por cima da Uber e da 99, " +
-            "sem tocar em aceitar ou recusar. A análise usa R$ 40/h de faturamento bruto, " +
-            "R$ 25/h e R$ 1/km de sobra, com combustível, desgaste e reserva do financiamento."
+            "sem tocar em aceitar ou recusar. A análise exige R$ 1,70/km brutos " +
+            "e R$ 40/h brutos ao mesmo tempo, sem descontar custos."
         ))
         container.addView(label(
             "Privacidade: se você ativar o recurso, o Android permitirá que este " +
@@ -109,7 +109,7 @@ class MainActivity : Activity() {
             } else {
                 "DEMONSTRAÇÃO — " + result.label + "\n" +
                     OfferEngine.brl(result.grossPerHour) + "/h bruto\n" +
-                    OfferEngine.brl(result.netPerHour) + "/h após custos"
+                    OfferEngine.brl(result.grossPerKm) + "/km bruto"
             }
             preview.setTextColor(if (result?.good == true) green else Color.rgb(255, 110, 110))
         }
@@ -198,8 +198,7 @@ class MainActivity : Activity() {
             } else {
                 avaliacao.label + "\n" +
                     OfferEngine.brl(avaliacao.grossPerHour) + "/h de faturamento bruto\n" +
-                    OfferEngine.brl(avaliacao.netPerHour) + "/h após os custos\n" +
-                    OfferEngine.brl(avaliacao.netPerKm) + "/km após os custos"
+                    OfferEngine.brl(avaliacao.grossPerKm) + "/km de faturamento bruto"
             }
             val destaque = if (avaliacao?.good == true) green else
                 Color.rgb(255, 110, 110)
@@ -214,9 +213,9 @@ class MainActivity : Activity() {
         container.addView(analisar)
         container.addView(resultado)
         container.addView(texto(
-            "Referência inicial: R$ 40/h brutos, R$ 25/h de sobra e R$ 1/km " +
-                "de sobra, considerando etanol, desgaste e rateio do financiamento " +
-                "do Sandero. Esses valores são provisórios.", 14f
+            "Critérios: mínimo de R$ 1,70/km e R$ 40/h, ambos brutos. " +
+                "Inclui a busca e a viagem. Combustível, manutenção e financiamento " +
+                "não entram no cálculo da classificação.", 14f
         ))
         container.addView(texto(
             "Esta é uma demonstração de cálculo, não um aplicativo de leitura automática. " +

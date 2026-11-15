@@ -65,7 +65,7 @@ class OfferReaderService : AccessibilityService() {
         val color = if (result.good) Color.rgb(65, 229, 126) else Color.rgb(255, 100, 113)
         val title = result.label
         val details = OfferEngine.brl(result.grossPerHour) + "/h bruto · " +
-            OfferEngine.brl(result.netPerHour) + "/h após custos"
+            OfferEngine.brl(result.grossPerKm) + "/km bruto"
 
         val box = TextView(this).apply {
             text = title + "\n" + details
