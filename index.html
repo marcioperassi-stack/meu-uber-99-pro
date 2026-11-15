@@ -296,6 +296,8 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
 .analise-resultado[data-status="bom"] { border-color: var(--verde); }
 .analise-resultado[data-status="atencao"] { border-color: #f2bd60; }
 .analise-resultado[data-status="ruim"] { border-color: var(--vermelho); }
+.analise-resultado[data-status="pendente"] { border-color: #f2bd60; }
+.analise-resultado[data-status="pendente"] h3 { color: #f2bd60; }
 .analise-resultado h3 { font-size: 21px; }
 .analise-resultado[data-status="bom"] h3 { color: var(--verde); }
 .analise-resultado[data-status="atencao"] h3 { color: #f2bd60; }
@@ -466,7 +468,23 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
     </div>
 
     <div class="card">
-      <h3>3. Suas metas de lucro líquido</h3>
+      <h3>3. Financiamento (despesa fixa mensal)</h3>
+      <p class="muted">A parcela é um compromisso mensal de caixa, não um custo variável do carro. Para distribuir seu valor pelas corridas, informe quantos quilômetros de trabalho você prevê rodar no mês.</p>
+      <div class="analise-campos">
+        <div>
+          <label for="analiseParcela">Parcela mensal do Sandero (R$)</label>
+          <input type="number" id="analiseParcela" min="0" step="0.01" value="2252.00" required>
+        </div>
+        <div>
+          <label for="analiseKmMensais">Km de trabalho previstos por mês (opcional)</label>
+          <input type="number" id="analiseKmMensais" min="1" step="1" placeholder="Informe sua previsão real de km">
+        </div>
+      </div>
+      <p class="analise-discreto">Sem os quilômetros mensais, o aplicativo mostra o resultado antes da parcela, mas não classifica a corrida como dentro das metas. O financiamento não é registrado automaticamente nos lançamentos e pode incluir amortização de dívida, não apenas despesa contábil.</p>
+    </div>
+
+    <div class="card">
+      <h3>4. Suas metas de sobra por corrida</h3>
       <p class="muted">A análise só indica que compensa quando atingir <strong>as duas metas</strong>.</p>
       <div class="analise-campos">
         <div>
@@ -487,24 +505,38 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
     <p id="analiseMensagem"></p>
     <div class="grid">
       <div class="metric destaque">
-        <div class="nome">Lucro estimado</div>
+        <div class="nome">Sobra antes do financiamento</div>
         <div class="valor" id="analiseLucro"></div>
       </div>
       <div class="metric">
-        <div class="nome">Lucro por km total</div>
+        <div class="nome" id="analiseRotuloKm">Sobra por km total</div>
         <div class="valor" id="analisePorKm"></div>
       </div>
       <div class="metric">
-        <div class="nome">Lucro por hora total</div>
+        <div class="nome" id="analiseRotuloHora">Sobra por hora total</div>
         <div class="valor" id="analisePorHora"></div>
       </div>
       <div class="metric">
-        <div class="nome">Custos estimados</div>
+        <div class="nome">Custos variáveis estimados</div>
         <div class="valor" id="analiseCustos"></div>
       </div>
     </div>
     <p id="analiseDetalhes"></p>
-    <p>Oferta mínima estimada para bater suas metas: <strong id="analiseMinima"></strong></p>
+    <div id="analiseBlocoParcela">
+      <p><strong>Parcela mensal: <span id="analiseParcelaMensal"></span></strong></p>
+      <p id="analiseAvisoParcela"></p>
+      <div class="grid" id="analiseRateioResultado" hidden>
+        <div class="metric">
+          <div class="nome">Parcela alocada à corrida</div>
+          <div class="valor" id="analiseParcelaCorrida"></div>
+        </div>
+        <div class="metric destaque">
+          <div class="nome">Sobra após o rateio da parcela</div>
+          <div class="valor" id="analiseSaldoComParcela"></div>
+        </div>
+      </div>
+    </div>
+    <p><span id="analiseRotuloMinima">Oferta mínima estimada para bater suas metas</span>: <strong id="analiseMinima"></strong></p>
     <p class="analise-discreto">Estimativa, não garantia: considera ida até o passageiro, percurso, tempo, combustível, manutenção e gastos extras informados. Não inclui impostos, tempo parado, retorno sem passageiro nem outros custos não preenchidos. A decisão é sempre sua.</p>
   </div>
 </section>
@@ -1098,19 +1130,21 @@ const CHAVE_ANALISE = "MEU_UBER_99_PRO_ANALISE_V1";
 const CHAVE_PERFIL_ETANOL = "MEU_UBER_99_PRO_SANDERO_ETANOL_V1";
 const CAMPOS_PREFERENCIAS_ANALISE = [
   "analiseCombustivel", "analiseConsumo", "analiseDesgaste",
-  "analiseMetaKm", "analiseMetaHora"
+  "analiseMetaKm", "analiseMetaHora", "analiseParcela", "analiseKmMensais"
 ];
 
 function calcularAnaliseCorrida(dados) {
   const numeros = [
     dados.valor, dados.kmBusca, dados.kmCorrida, dados.minBusca,
     dados.minCorrida, dados.pedagio, dados.combustivel, dados.consumo,
-    dados.desgaste, dados.metaKm, dados.metaHora
+    dados.desgaste, dados.metaKm, dados.metaHora, dados.parcela
   ];
   if (!numeros.every(Number.isFinite) || numeros.some(n => n < 0) ||
       dados.valor <= 0 || dados.kmCorrida <= 0 ||
-      dados.minCorrida <= 0 || dados.consumo <= 0) {
-    throw new Error("Informe valores válidos e positivos para a oferta, os km, o tempo e o consumo.");
+      dados.minCorrida <= 0 || dados.consumo <= 0 ||
+      (dados.kmMensais !== null &&
+        (!Number.isFinite(dados.kmMensais) || dados.kmMensais <= 0))) {
+    throw new Error("Confira os valores informados, inclusive a parcela e a previsão de km mensais.");
   }
 
   const kmTotal = dados.kmBusca + dados.kmCorrida;
@@ -1120,16 +1154,24 @@ function calcularAnaliseCorrida(dados) {
   const custoDesgaste = kmTotal * dados.desgaste;
   const custoTotal = custoCombustivel + custoDesgaste + dados.pedagio;
   const lucroEstimado = dados.valor - custoTotal;
-  const lucroPorKm = lucroEstimado / kmTotal;
-  const lucroPorHora = lucroEstimado / horasTotal;
-  const ofertaMinima = custoTotal + Math.max(dados.metaKm * kmTotal, dados.metaHora * horasTotal);
-  const atendeMetas = lucroEstimado > 0 &&
+  const temRateio = dados.kmMensais !== null;
+  const precisaKmMensais = dados.parcela > 0 && !temRateio;
+  const custoParcelaRateado = temRateio ? dados.parcela / dados.kmMensais * kmTotal : 0;
+  const saldoComParcela = lucroEstimado - custoParcelaRateado;
+  const valorParaMetas = temRateio || dados.parcela === 0 ? saldoComParcela : lucroEstimado;
+  const lucroPorKm = valorParaMetas / kmTotal;
+  const lucroPorHora = valorParaMetas / horasTotal;
+  const ofertaMinima = precisaKmMensais ? null :
+    custoTotal + custoParcelaRateado +
+      Math.max(dados.metaKm * kmTotal, dados.metaHora * horasTotal);
+  const atendeMetas = !precisaKmMensais && valorParaMetas > 0 &&
     lucroPorKm + 1e-9 >= dados.metaKm && lucroPorHora + 1e-9 >= dados.metaHora;
 
   return {
     kmTotal, minutosTotal, custoCombustivel, custoDesgaste,
     custoTotal, lucroEstimado, lucroPorKm, lucroPorHora,
-    ofertaMinima, atendeMetas
+    ofertaMinima, atendeMetas, temRateio, precisaKmMensais,
+    custoParcelaRateado, saldoComParcela
   };
 }
 
@@ -1183,12 +1225,15 @@ function analisarCorrida(evento) {
     consumo: "analiseConsumo",
     desgaste: "analiseDesgaste",
     metaKm: "analiseMetaKm",
-    metaHora: "analiseMetaHora"
+    metaHora: "analiseMetaHora",
+    parcela: "analiseParcela",
+    kmMensais: "analiseKmMensais"
   };
   const dados = {};
   Object.keys(ids).forEach(chave => {
     const texto = document.getElementById(ids[chave]).value.trim();
-    dados[chave] = texto === "" ? NaN : Number(texto);
+    dados[chave] = (chave === "kmMensais" && texto === "") ? null :
+      (texto === "" ? NaN : Number(texto));
   });
 
   let resultado;
@@ -1204,27 +1249,53 @@ function analisarCorrida(evento) {
 
   const area = document.getElementById("resultadoAnalise");
   const app = document.getElementById("analiseApp").value;
-  const perdeuDinheiro = resultado.lucroEstimado <= 0;
-  area.dataset.status = perdeuDinheiro ? "ruim" : (resultado.atendeMetas ? "bom" : "atencao");
+  const perdeuDinheiro = resultado.precisaKmMensais ? false :
+    (resultado.temRateio ? resultado.saldoComParcela <= 0 : resultado.lucroEstimado <= 0);
+  area.dataset.status = resultado.precisaKmMensais ? "pendente" :
+    perdeuDinheiro ? "ruim" : (resultado.atendeMetas ? "bom" : "atencao");
   document.getElementById("analiseVeredito").textContent =
-    perdeuDinheiro ? "Prejuízo ou lucro zero estimado" :
+    resultado.precisaKmMensais ? "Falta informar os km mensais" :
+    perdeuDinheiro ? "Prejuízo ou sobra zero estimada" :
     resultado.atendeMetas ? "Dentro das suas metas" : "Abaixo das suas metas";
   document.getElementById("analiseMensagem").textContent =
-    app + ": " + (perdeuDinheiro
-      ? "o valor da oferta não cobre todos os custos estimados."
-      : resultado.atendeMetas
-        ? "a oferta atinge as duas metas configuradas."
-        : "há lucro estimado, mas pelo menos uma das suas metas não foi atingida.");
+    app + ": " + (resultado.precisaKmMensais
+      ? "a parcela está registrada, mas ainda falta sua previsão de quilômetros mensais para avaliar as metas incluindo o financiamento."
+      : perdeuDinheiro
+        ? "o valor não cobre os custos estimados considerados."
+        : resultado.atendeMetas
+          ? "a sobra atinge suas duas metas configuradas."
+          : "a sobra é positiva, mas pelo menos uma meta não foi atingida.");
   document.getElementById("analiseLucro").textContent = moeda(resultado.lucroEstimado);
   document.getElementById("analisePorKm").textContent = moeda(resultado.lucroPorKm);
   document.getElementById("analisePorHora").textContent = moeda(resultado.lucroPorHora);
   document.getElementById("analiseCustos").textContent = moeda(resultado.custoTotal);
-  document.getElementById("analiseMinima").textContent = moeda(resultado.ofertaMinima);
+  document.getElementById("analiseRotuloKm").textContent =
+    resultado.temRateio ? "Sobra por km após rateio" : "Sobra por km antes da parcela";
+  document.getElementById("analiseRotuloHora").textContent =
+    resultado.temRateio ? "Sobra por hora após rateio" : "Sobra por hora antes da parcela";
+  document.getElementById("analiseMinima").textContent =
+    resultado.ofertaMinima === null ? "Aguardando km mensais" : moeda(resultado.ofertaMinima);
+  document.getElementById("analiseRotuloMinima").textContent =
+    resultado.temRateio ? "Oferta mínima incluindo o rateio da parcela" :
+    "Oferta mínima estimada para bater suas metas";
   document.getElementById("analiseDetalhes").textContent =
     "Distância total: " + decimal(resultado.kmTotal) + " km. Tempo total: " +
     decimal(resultado.minutosTotal) + " min. Combustível: " +
     moeda(resultado.custoCombustivel) + ". Manutenção/desgaste: " +
     moeda(resultado.custoDesgaste) + ". Outros gastos: " + moeda(dados.pedagio) + ".";
+  document.getElementById("analiseParcelaMensal").textContent = moeda(dados.parcela);
+  const blocoRateio = document.getElementById("analiseRateioResultado");
+  blocoRateio.hidden = !resultado.temRateio;
+  document.getElementById("analiseParcelaCorrida").textContent =
+    moeda(resultado.custoParcelaRateado);
+  document.getElementById("analiseSaldoComParcela").textContent =
+    moeda(resultado.saldoComParcela);
+  document.getElementById("analiseAvisoParcela").textContent =
+    resultado.precisaKmMensais
+      ? "A parcela ainda não entrou no resultado da corrida. Preencha os km mensais para calcular quanto reservar desta oferta."
+      : resultado.temRateio
+        ? "Rateio de planejamento: parcela ÷ km mensais previstos × km desta oferta. Não representa necessariamente custo contábil."
+        : "Sem parcela mensal informada: a oferta é analisada apenas com custos variáveis.";
   area.hidden = false;
 }
 
