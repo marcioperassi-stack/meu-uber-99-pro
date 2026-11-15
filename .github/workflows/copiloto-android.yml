@@ -58,7 +58,7 @@ jobs:
           if grep -E "OfferReaderService|BIND_ACCESSIBILITY_SERVICE|accessibilityservice.AccessibilityService|READ_MEDIA_IMAGES|READ_EXTERNAL_STORAGE|SYSTEM_ALERT_WINDOW|android.permission.INTERNET" manifest-debug.txt; then
             echo "ERRO: Permissão ou serviço proibido presente na demo!"; exit 1
           fi
-          if ! grep -q "br.com.meuuber99pro.copiloto.demo" manifest-debug.txt; then
+          if ! grep -q "br.com.meuuber99pro.copiloto.print" manifest-debug.txt; then
             echo "ERRO: Identificador da demo não encontrado!"; exit 1
           fi
           echo "APK demo sem serviço de Acessibilidade validado no manifesto."
