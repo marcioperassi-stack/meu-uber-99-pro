@@ -310,6 +310,18 @@ class MainActivity : Activity() {
                 val inspection = OfferEngine.inspectScreenshotText(recognized.text)
                 val offer = inspection.offer
                 if (offer == null) {
+                    // Preencher apenas os grupos inequívocos, mantendo os demais vazios.
+                    val partial = listOf(
+                        inspection.fare, inspection.pickupKm, inspection.tripKm,
+                        inspection.pickupMinutes, inspection.tripMinutes
+                    )
+                    demoInputs.zip(partial).forEach { (field, value) ->
+                        if (value != null) field.setText(
+                            java.lang.String.format(
+                                java.util.Locale.US, "%.3f", value
+                            ).trimEnd('0').trimEnd('.')
+                        )
+                    }
                     screenshotStatus?.text = if (recognized.text.isBlank()) {
                         "Nenhum texto foi reconhecido. Experimente recortar o print " +
                             "para mostrar só a oferta, com números maiores."
@@ -318,8 +330,9 @@ class MainActivity : Activity() {
                             "Valores: ${inspection.fareCount} (precisa 1); " +
                             "distâncias: ${inspection.distanceCount} (precisa 2); " +
                             "tempos: ${inspection.timeCount} (precisa 2). " +
+                            "Preenchi apenas o que ficou claro. " +
                             "Tente recortar a imagem para mostrar somente a proposta " +
-                            "ou complete manualmente."
+                            "ou complete os campos vazios manualmente."
                     }
                     demoResult?.text = "Análise pendente: confira os campos e preencha o que faltou."
                 } else {
