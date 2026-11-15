@@ -295,14 +295,34 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
 .analise-campos label { margin-top: 4px; }
 .analise-resultado { border: 2px solid var(--borda); }
 .analise-resultado[data-status="bom"] { border-color: var(--verde); }
-.analise-resultado[data-status="atencao"] { border-color: #f2bd60; }
 .analise-resultado[data-status="ruim"] { border-color: var(--vermelho); }
 .analise-resultado[data-status="pendente"] { border-color: #f2bd60; }
-.analise-resultado[data-status="pendente"] h3 { color: #f2bd60; }
-.analise-resultado h3 { font-size: 21px; }
-.analise-resultado[data-status="bom"] h3 { color: var(--verde); }
-.analise-resultado[data-status="atencao"] h3 { color: #f2bd60; }
-.analise-resultado[data-status="ruim"] h3 { color: var(--vermelho); }
+.analise-banner {
+  padding: 18px 14px;
+  border: 2px solid transparent;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.analise-banner h3 {
+  font-size: clamp(24px, 6vw, 32px);
+  font-weight: 900;
+  letter-spacing: .04em;
+  margin: 0 0 8px;
+}
+.analise-banner p { margin: 0; line-height: 1.5; font-size: 14px; }
+.analise-resultado[data-status="bom"] .analise-banner {
+  background: #103a21; border-color: #53efa1; color: #dbffe9;
+}
+.analise-resultado[data-status="bom"] .analise-banner h3 { color: #7dffb3; }
+.analise-resultado[data-status="ruim"] .analise-banner {
+  background: #42191f; border-color: #ff6b79; color: #ffe9ec;
+}
+.analise-resultado[data-status="ruim"] .analise-banner h3 { color: #ff8793; }
+.analise-resultado[data-status="pendente"] .analise-banner {
+  background: #3b2c12; border-color: #f2bd60; color: #fff3dc;
+}
+.analise-resultado[data-status="pendente"] .analise-banner h3 { color: #f2bd60; }
 .analise-resultado .metric { margin-bottom: 4px; }
 .analise-discreto { font-size: 12px; color: var(--cinza); line-height: 1.5; }
 @media (min-width: 650px) { .analise-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -526,8 +546,10 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
   </form>
 
   <div class="card analise-resultado" id="resultadoAnalise" role="status" aria-live="polite" hidden>
-    <h3 id="analiseVeredito"></h3>
-    <p id="analiseMensagem"></p>
+    <div class="analise-banner">
+      <h3 id="analiseVeredito"></h3>
+      <p id="analiseMensagem"></p>
+    </div>
     <div class="grid">
       <div class="metric destaque">
         <div class="nome">Faturamento bruto por hora</div>
@@ -1364,13 +1386,12 @@ function analisarCorrida(evento) {
   const app = document.getElementById("analiseApp").value;
   const perdeuDinheiro = resultado.precisaKmMensais ? false :
     (resultado.temRateio ? resultado.saldoComParcela <= 0 : resultado.lucroEstimado <= 0);
+  // O aviso verde exige todas as metas; sem rateio disponível, sinaliza pendência.
   area.dataset.status = resultado.precisaKmMensais ? "pendente" :
-    perdeuDinheiro ? "ruim" : (resultado.atendeMetas ? "bom" : "atencao");
+    (resultado.atendeMetas ? "bom" : "ruim");
   document.getElementById("analiseVeredito").textContent =
-    resultado.precisaKmMensais ? "Falta informar os km mensais" :
-    perdeuDinheiro ? "Prejuízo ou sobra zero estimada" :
-    !resultado.atendeMetaBruta ? "Abaixo do mínimo de " + moeda(dados.metaHoraBruta) + "/h" :
-    resultado.atendeMetas ? "Dentro das suas metas" : "Abaixo das suas metas";
+    resultado.precisaKmMensais ? "⚠️ ANÁLISE INCOMPLETA" :
+    resultado.atendeMetas ? "✅ CORRIDA BOA" : "❌ CORRIDA RUIM";
   document.getElementById("analiseMensagem").textContent =
     app + ": " + (resultado.precisaKmMensais
       ? "a parcela está registrada, mas ainda falta sua previsão de quilômetros mensais para avaliar as metas incluindo o financiamento."
