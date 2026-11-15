@@ -1,0 +1,72 @@
+name: Compilar demo Android sem Acessibilidade
+
+on:
+  push:
+    branches:
+      - experimento-copiloto-android
+    paths:
+      - 'android-copiloto/**'
+      - '.github/workflows/copiloto-android.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'android-copiloto/**'
+      - '.github/workflows/copiloto-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparar Android SDK
+        shell: bash
+        run: |
+          echo "SDK: $ANDROID_HOME"
+          SDK_MANAGER="$(find "$ANDROID_HOME/cmdline-tools" -type f -name sdkmanager | head -n 1)"
+          if [ -z "$SDK_MANAGER" ]; then
+            echo "sdkmanager não encontrado"; exit 1
+          fi
+          "$SDK_MANAGER" --install "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Compilar APK de depuracao
+        run: gradle -p android-copiloto :app:testDemoDebugUnitTest :app:assembleDemoDebug --no-daemon --stacktrace
+
+      - name: Verificar APK de demonstração sem serviço sensível
+        shell: bash
+        run: |
+          APK="android-copiloto/app/build/outputs/apk/demo/debug/app-demo-debug.apk"
+          test -f "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump xmltree "$APK" AndroidManifest.xml > manifest-debug.txt
+          if grep -E "OfferReaderService|BIND_ACCESSIBILITY_SERVICE|accessibilityservice.AccessibilityService|READ_MEDIA_IMAGES|READ_EXTERNAL_STORAGE|SYSTEM_ALERT_WINDOW|android.permission.INTERNET" manifest-debug.txt; then
+            echo "ERRO: Permissão ou serviço proibido presente na demo!"; exit 1
+          fi
+          if ! grep -q "br.com.meuuber99pro.copiloto.print" manifest-debug.txt; then
+            echo "ERRO: Identificador da demo não encontrado!"; exit 1
+          fi
+          echo "APK demo sem serviço de Acessibilidade validado no manifesto."
+
+      - name: Arquivar APK experimental
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meu-uber-99-demo-analise-print-sem-acessibilidade
+          path: android-copiloto/app/build/outputs/apk/demo/debug/app-demo-debug.apk
+          if-no-files-found: error
