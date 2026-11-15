@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Apenas a variante automática experimental inclui o serviço sensível. -->
+    <application android:label="Meu Uber/99 Pro - Copiloto Experimental">
+        <service
+            android:name=".OfferReaderService"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true"
+            android:label="Analisar ofertas Uber e 99">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+            </intent-filter>
+            <meta-data android:name="android.accessibilityservice"
+                android:resource="@xml/offer_service"/>
+        </service>
+    </application>
+</manifest>
