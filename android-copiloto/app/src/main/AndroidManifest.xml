@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Sem INTERNET, sem microfone, sem localização e sem permissão para aceitar corridas. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Modelo de OCR é empacotado; a demo não deve ter acesso à internet. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove"/>
+    <!-- Sem microfone, sem localização e sem permissão para aceitar corridas. -->
     <application android:label="Meu Uber/99 Pro - Teste"
         android:theme="@android:style/Theme.Material.Light.NoActionBar"
         android:usesCleartextTraffic="false">
