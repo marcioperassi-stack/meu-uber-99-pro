@@ -75,7 +75,12 @@ object OfferEngine {
         val offer: Offer?,
         val fareCount: Int,
         val distanceCount: Int,
-        val timeCount: Int
+        val timeCount: Int,
+        val fare: Double? = null,
+        val pickupKm: Double? = null,
+        val tripKm: Double? = null,
+        val pickupMinutes: Double? = null,
+        val tripMinutes: Double? = null
     )
 
     fun inspectScreenshotText(text: String): ScreenshotReading {
@@ -150,7 +155,14 @@ object OfferEngine {
             Offer(fares.single(), kmValues[0], kmValues[1], minuteValues[0], minuteValues[1])
                 .takeIf { isValid(it) }
         } else null
-        return ScreenshotReading(offer, fares.size, kmValues.size, minuteValues.size)
+        return ScreenshotReading(
+            offer, fares.size, kmValues.size, minuteValues.size,
+            fare = fares.singleOrNull(),
+            pickupKm = kmValues.takeIf { it.size == 2 }?.get(0),
+            tripKm = kmValues.takeIf { it.size == 2 }?.get(1),
+            pickupMinutes = minuteValues.takeIf { it.size == 2 }?.get(0),
+            tripMinutes = minuteValues.takeIf { it.size == 2 }?.get(1)
+        )
     }
 
     fun parseScreenshotText(text: String): Offer? = inspectScreenshotText(text).offer
