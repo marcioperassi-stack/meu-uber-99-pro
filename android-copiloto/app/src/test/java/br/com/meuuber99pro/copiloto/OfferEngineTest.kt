@@ -89,4 +89,64 @@ class OfferEngineTest {
             OfferEngine.Offer(30.0, 0.0, 0.0, 0.0, 0.0)
         ))
     }
+    @Test fun valorPrincipalEValorPorKmNaMesmaLinha() {
+        val o = OfferEngine.parseScreenshotText(
+            "R$ 19,40  R$ 1,65/km\n4 min (825 m)\n12 min (10,9 km)"
+        )
+        assertNotNull(o)
+        assertEquals(19.40, o!!.fare, 0.0001)
+        assertEquals(0.825, o.pickupKm, 0.0001)
+    }
+
+    @Test fun moedaSeparadaEntreLinhas() {
+        val o = OfferEngine.parseScreenshotText(
+            "R$\n19,40\n4 min\n825 m\n12 min\n10,9 km"
+        )
+        assertNotNull(o)
+        assertEquals(19.40, o!!.fare, 0.0001)
+    }
+
+    @Test fun moedaOCRConfundeCifraoComS() {
+        val o = OfferEngine.parseScreenshotText(
+            "RS 19,40\n4 min 825 m\n12 min 10,9 km"
+        )
+        assertNotNull(o)
+        assertEquals(19.40, o!!.fare, 0.0001)
+    }
+
+    @Test fun enderecoEntreTempoEDistanciaNaoInvalida() {
+        val o = OfferEngine.parseScreenshotText(
+            "R$ 19,40\n4 min\nRua Exemplo\n825 m\n" +
+                "12 min\nAvenida Exemplo\n10,9 km"
+        )
+        assertNotNull(o)
+        assertEquals(4.0, o!!.pickupMinutes, 0.0001)
+        assertEquals(10.9, o.tripKm, 0.0001)
+    }
+
+    @Test fun relatorioDeOCRMostraApenasContagem() {
+        val result = OfferEngine.inspectScreenshotText(
+            "R$ 19,40\n4 min\n825 m\n12 min"
+        )
+        assertNull(result.offer)
+        assertEquals(1, result.fareCount)
+        assertEquals(1, result.distanceCount)
+        assertEquals(2, result.timeCount)
+    }
+
+    @Test fun taxaExtraNaMesmaLinhaDaTarifaNaoApagaValorPrincipal() {
+        val o = OfferEngine.parseScreenshotText(
+            "R$ 19,40  R$ 3,00 adicional\n4 min 825 m\n12 min 10,9 km"
+        )
+        assertNotNull(o)
+        assertEquals(19.40, o!!.fare, 0.0001)
+    }
+
+    @Test fun muitosValoresAmbiguosNaoClassificam() {
+        val o = OfferEngine.parseScreenshotText(
+            "R$ 19,40  R$ 20,40\n4 min 825 m\n12 min 10,9 km"
+        )
+        assertNull(o)
+    }
+
 }
