@@ -504,18 +504,23 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
     </div>
 
     <div class="card">
-      <h3>4. Suas metas de sobra por corrida</h3>
-      <p class="muted">A análise só indica que compensa quando atingir <strong>as duas metas</strong>.</p>
+      <h3>4. Suas metas para avaliar a corrida</h3>
+      <p class="muted">A oferta só é considerada boa quando alcançar pelo menos <strong>R$ 40 por hora de faturamento</strong> e também as metas de sobra após custos.</p>
       <div class="analise-campos">
+        <div>
+          <label for="analiseMetaHoraBruta">Faturamento mínimo por hora (R$)</label>
+          <input type="number" id="analiseMetaHoraBruta" min="0" step="0.01" value="40.00" required>
+        </div>
         <div>
           <label for="analiseMetaKm">Lucro mínimo por km rodado (R$)</label>
           <input type="number" id="analiseMetaKm" min="0" step="0.01" value="1.00" required>
         </div>
         <div>
-          <label for="analiseMetaHora">Lucro mínimo por hora (R$)</label>
+          <label for="analiseMetaHora">Sobra mínima por hora após custos (R$)</label>
           <input type="number" id="analiseMetaHora" min="0" step="0.01" value="25.00" required>
         </div>
       </div>
+      <p class="analise-discreto">Faturamento por hora = valor da corrida dividido pela soma do tempo de busca e do tempo de viagem. A sobra por hora desconta custos do carro e, quando calculado, o rateio do financiamento.</p>
       <button class="btn" type="submit">Analisar corrida</button>
     </div>
   </form>
@@ -524,6 +529,10 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
     <h3 id="analiseVeredito"></h3>
     <p id="analiseMensagem"></p>
     <div class="grid">
+      <div class="metric destaque">
+        <div class="nome">Faturamento bruto por hora</div>
+        <div class="valor" id="analiseBrutoPorHora"></div>
+      </div>
       <div class="metric destaque">
         <div class="nome">Sobra antes do financiamento</div>
         <div class="valor" id="analiseLucro"></div>
@@ -541,6 +550,7 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
         <div class="valor" id="analiseCustos"></div>
       </div>
     </div>
+    <p id="analiseMetaBrutaAviso"></p>
     <p id="analiseDetalhes"></p>
     <div id="analiseBlocoParcela">
       <p><strong>Parcela mensal: <span id="analiseParcelaMensal"></span></strong></p>
@@ -1151,7 +1161,7 @@ const CHAVE_PERFIL_ETANOL = "MEU_UBER_99_PRO_SANDERO_ETANOL_V1";
 const CHAVE_ROTINA_DIARIA_MES = "MEU_UBER_99_PRO_ROTINA_TODOS_DIAS_MES_V1";
 const CAMPOS_PREFERENCIAS_ANALISE = [
   "analiseCombustivel", "analiseConsumo", "analiseDesgaste",
-  "analiseMetaKm", "analiseMetaHora", "analiseParcela", "analiseKmMensais",
+  "analiseMetaKm", "analiseMetaHora", "analiseMetaHoraBruta", "analiseParcela", "analiseKmMensais",
   "analiseKmDiaMin", "analiseKmDiaMax", "analiseDiasMes"
 ];
 
@@ -1231,7 +1241,7 @@ function calcularAnaliseCorrida(dados) {
   const numeros = [
     dados.valor, dados.kmBusca, dados.kmCorrida, dados.minBusca,
     dados.minCorrida, dados.pedagio, dados.combustivel, dados.consumo,
-    dados.desgaste, dados.metaKm, dados.metaHora, dados.parcela
+    dados.desgaste, dados.metaKm, dados.metaHora, dados.metaHoraBruta, dados.parcela
   ];
   if (!numeros.every(Number.isFinite) || numeros.some(n => n < 0) ||
       dados.valor <= 0 || dados.kmCorrida <= 0 ||
@@ -1255,16 +1265,22 @@ function calcularAnaliseCorrida(dados) {
   const valorParaMetas = temRateio || dados.parcela === 0 ? saldoComParcela : lucroEstimado;
   const lucroPorKm = valorParaMetas / kmTotal;
   const lucroPorHora = valorParaMetas / horasTotal;
+  const faturamentoPorHora = dados.valor / horasTotal;
+  const atendeMetaBruta = faturamentoPorHora + 1e-9 >= dados.metaHoraBruta;
   const ofertaMinima = precisaKmMensais ? null :
-    custoTotal + custoParcelaRateado +
-      Math.max(dados.metaKm * kmTotal, dados.metaHora * horasTotal);
+    Math.max(
+      dados.metaHoraBruta * horasTotal,
+      custoTotal + custoParcelaRateado +
+        Math.max(dados.metaKm * kmTotal, dados.metaHora * horasTotal)
+    );
   const atendeMetas = !precisaKmMensais && valorParaMetas > 0 &&
+    atendeMetaBruta &&
     lucroPorKm + 1e-9 >= dados.metaKm && lucroPorHora + 1e-9 >= dados.metaHora;
 
   return {
     kmTotal, minutosTotal, custoCombustivel, custoDesgaste,
     custoTotal, lucroEstimado, lucroPorKm, lucroPorHora,
-    ofertaMinima, atendeMetas, temRateio, precisaKmMensais,
+    faturamentoPorHora, atendeMetaBruta, ofertaMinima, atendeMetas, temRateio, precisaKmMensais,
     custoParcelaRateado, saldoComParcela
   };
 }
@@ -1322,6 +1338,7 @@ function analisarCorrida(evento) {
     desgaste: "analiseDesgaste",
     metaKm: "analiseMetaKm",
     metaHora: "analiseMetaHora",
+    metaHoraBruta: "analiseMetaHoraBruta",
     parcela: "analiseParcela",
     kmMensais: "analiseKmMensais"
   };
@@ -1352,6 +1369,7 @@ function analisarCorrida(evento) {
   document.getElementById("analiseVeredito").textContent =
     resultado.precisaKmMensais ? "Falta informar os km mensais" :
     perdeuDinheiro ? "Prejuízo ou sobra zero estimada" :
+    !resultado.atendeMetaBruta ? "Abaixo do mínimo de " + moeda(dados.metaHoraBruta) + "/h" :
     resultado.atendeMetas ? "Dentro das suas metas" : "Abaixo das suas metas";
   document.getElementById("analiseMensagem").textContent =
     app + ": " + (resultado.precisaKmMensais
@@ -1359,8 +1377,15 @@ function analisarCorrida(evento) {
       : perdeuDinheiro
         ? "o valor não cobre os custos estimados considerados."
         : resultado.atendeMetas
-          ? "a sobra atinge suas duas metas configuradas."
-          : "a sobra é positiva, mas pelo menos uma meta não foi atingida.");
+          ? "o faturamento por hora e as duas metas de sobra após custos foram atingidos."
+          : !resultado.atendeMetaBruta
+            ? "o faturamento por hora ficou abaixo do mínimo, antes mesmo de descontar custos."
+            : "o faturamento por hora passou, mas alguma meta de sobra após custos não foi atingida.");
+  document.getElementById("analiseBrutoPorHora").textContent = moeda(resultado.faturamentoPorHora) + "/h";
+  document.getElementById("analiseMetaBrutaAviso").textContent =
+    (resultado.atendeMetaBruta ? "Meta de faturamento por hora atingida: " :
+      "Abaixo da meta de faturamento por hora: ") +
+    moeda(resultado.faturamentoPorHora) + "/h (mínimo " + moeda(dados.metaHoraBruta) + "/h).";
   document.getElementById("analiseLucro").textContent = moeda(resultado.lucroEstimado);
   document.getElementById("analisePorKm").textContent = moeda(resultado.lucroPorKm);
   document.getElementById("analisePorHora").textContent = moeda(resultado.lucroPorHora);
@@ -1372,8 +1397,8 @@ function analisarCorrida(evento) {
   document.getElementById("analiseMinima").textContent =
     resultado.ofertaMinima === null ? "Aguardando km mensais" : moeda(resultado.ofertaMinima);
   document.getElementById("analiseRotuloMinima").textContent =
-    resultado.temRateio ? "Oferta mínima incluindo o rateio da parcela" :
-    "Oferta mínima estimada para bater suas metas";
+    resultado.temRateio ? "Oferta mínima incluindo o rateio da parcela e a meta por hora" :
+    "Oferta mínima estimada para atingir as três metas";
   document.getElementById("analiseDetalhes").textContent =
     "Distância total: " + decimal(resultado.kmTotal) + " km. Tempo total: " +
     decimal(resultado.minutosTotal) + " min. Combustível: " +
