@@ -8,15 +8,15 @@
 
 <style>
 :root {
-  --azul: #1769e0;
-  --azul-escuro: #1048a0;
-  --fundo: #f2f6fc;
-  --branco: #ffffff;
-  --texto: #202b3c;
-  --cinza: #697586;
-  --verde: #12805c;
-  --vermelho: #d93636;
-  --borda: #dce5f1;
+  --azul: #20d678;
+  --azul-escuro: #11a35b;
+  --fundo: #08110c;
+  --branco: #111e16;
+  --texto: #edf9f0;
+  --cinza: #acc3b3;
+  --verde: #53efa1;
+  --vermelho: #ff6b79;
+  --borda: #294433;
 }
 
 * {
@@ -269,6 +269,25 @@ footer {
     padding: 22px;
   }
 }
+
+/* Tema preto e verde: ganhos em destaque. */
+header { background: linear-gradient(135deg, #07110b, #174c2b); border-bottom: 2px solid #1bba68; }
+nav { background: #0e1b12; border-bottom-color: var(--borda); }
+nav button { background: #172c1d; color: #c9f8d8; }
+nav button.active { background: var(--azul); color: #04110a; }
+.card, .metric { background: #111e16; box-shadow: 0 3px 14px rgba(0,0,0,.16); }
+.metric.destaque .valor, #dRecebido { color: var(--verde); }
+.metric.verde .valor { color: var(--verde); }
+input, select, textarea { background: #0c1810; color: var(--texto); border-color: #355640; }
+input:focus, select:focus, textarea:focus { outline: 2px solid #28d779; outline-offset: 1px; }
+input::placeholder, textarea::placeholder { color: #91ab98; }
+.btn { color: #04110a; }
+.btn.secundario { background: #213626; color: #d2ffe0; }
+.item { background: #101b13; }
+.metric { border-left-color: var(--borda); }
+.metric.destaque { border-left-color: var(--azul); }
+.separador { background: var(--borda); }
+
 </style>
 </head>
 
