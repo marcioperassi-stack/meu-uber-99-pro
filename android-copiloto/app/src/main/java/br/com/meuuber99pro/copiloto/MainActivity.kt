@@ -135,7 +135,7 @@ class MainActivity : Activity() {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(32, 42, 32, 32)
-            setBackgroundColor(background)
+            setBackgroundColor(this@MainActivity.background)
         }
         fun texto(msg: String, tamanho: Float = 16f, cor: Int = foreground) =
             TextView(this).apply {
@@ -159,7 +159,7 @@ class MainActivity : Activity() {
                 setText(exemplo)
                 inputType = InputType.TYPE_CLASS_NUMBER or
                     InputType.TYPE_NUMBER_FLAG_DECIMAL
-                setTextColor(foreground)
+                setTextColor(this@MainActivity.foreground)
                 setHintTextColor(Color.LTGRAY)
                 setSingleLine(true)
                 setSelectAllOnFocus(true)
