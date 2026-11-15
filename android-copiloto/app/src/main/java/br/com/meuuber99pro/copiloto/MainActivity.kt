@@ -31,7 +31,7 @@ class MainActivity : Activity() {
         val container = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(32, 42, 32, 32)
-            setBackgroundColor(background)
+            setBackgroundColor(this@MainActivity.background)
         }
         fun label(text: String, size: Float = 17f, color: Int = foreground): TextView =
             TextView(this).apply {
@@ -66,7 +66,7 @@ class MainActivity : Activity() {
         val consent = CheckBox(this).apply {
             text = "Autorizo a leitura dos textos das ofertas da Uber e 99 para análise local."
             textSize = 15f
-            setTextColor(foreground)
+            setTextColor(this@MainActivity.foreground)
             isChecked = prefs.getBoolean("consentimento", false)
             setOnCheckedChangeListener { _, isChecked ->
                 prefs.edit().putBoolean("consentimento", isChecked).apply()
