@@ -36,6 +36,17 @@ O consumo inicial de etanol é **9,0 km/l** (referência urbana do Sandero Zen 2
 
 Uma oferta só aparece como **Dentro das suas metas** quando possui lucro positivo e atende **às duas metas**.
 
+## Financiamento do Sandero
+
+A parcela mensal informada pelo motorista é **R$ 2.252,00**. Ela aparece como compromisso fixo de caixa no analisador e é ajustável. Para distribuí-la por corrida, informe a **previsão de quilômetros de trabalho no mês**; esse campo fica vazio de propósito, pois ainda não sabemos a quilometragem real.
+
+- Rateio da parcela na oferta = (parcela mensal / quilômetros mensais previstos) × quilômetros totais da corrida, incluindo deslocamento até o passageiro.
+- Sobra de caixa estimada após rateio = valor ofertado − custos variáveis da corrida − rateio da parcela.
+- Oferta mínima para as duas metas = custos variáveis + rateio da parcela + maior valor entre (meta por km × km totais) e (meta por hora × horas totais).
+- Com financiamento e sem a previsão de km mensais, o analisador exibe o resultado *antes da parcela* e **não** classifica a oferta como dentro das metas.
+- O rateio é uma ferramenta de planejamento do dinheiro necessário para pagar a parcela; não é despesa operacional ou custo contábil equivalente. Uma prestação pode conter principal e juros.
+- A parcela não é lançada automaticamente no histórico financeiro para evitar duplicidade se o motorista já registrá-la em outra categoria.
+
 ## Limites importantes
 
 O analisador não lê nem aceita corridas automaticamente, não captura dados da Uber ou 99 e não controla o Waze. A simulação só acontece quando você toca no botão. Não inclui automaticamente impostos, tempo parado, deslocamento vazio após a corrida e outras despesas omitidas. Use com o veículo parado. A decisão de aceitar qualquer oferta continua com o motorista.
