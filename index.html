@@ -288,6 +288,22 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
 .metric.destaque { border-left-color: var(--azul); }
 .separador { background: var(--borda); }
 
+/* Analisador manual e independente do historico financeiro. */
+.analise-aviso { border-left: 4px solid var(--azul); background: #102719; }
+.analise-campos { display: grid; grid-template-columns: 1fr; gap: 0 14px; }
+.analise-campos label { margin-top: 4px; }
+.analise-resultado { border: 2px solid var(--borda); }
+.analise-resultado[data-status="bom"] { border-color: var(--verde); }
+.analise-resultado[data-status="atencao"] { border-color: #f2bd60; }
+.analise-resultado[data-status="ruim"] { border-color: var(--vermelho); }
+.analise-resultado h3 { font-size: 21px; }
+.analise-resultado[data-status="bom"] h3 { color: var(--verde); }
+.analise-resultado[data-status="atencao"] h3 { color: #f2bd60; }
+.analise-resultado[data-status="ruim"] h3 { color: var(--vermelho); }
+.analise-resultado .metric { margin-bottom: 4px; }
+.analise-discreto { font-size: 12px; color: var(--cinza); line-height: 1.5; }
+@media (min-width: 650px) { .analise-campos { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
 </style>
 </head>
 
@@ -301,6 +317,7 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
 <nav>
   <button class="active" data-aba="dashboard"
     onclick="aba('dashboard', this)">Painel</button>
+  <button data-aba="analisador" onclick="aba('analisador', this)">Analisar corrida</button>
   <button data-aba="lancamentos"
     onclick="aba('lancamentos', this)">Lançamentos</button>
   <button data-aba="historico"
@@ -373,6 +390,117 @@ input::placeholder, textarea::placeholder { color: #91ab98; }
     <div id="resumoPainel" class="muted">
       Seus lançamentos aparecerão aqui.
     </div>
+  </div>
+</section>
+
+
+<section id="analisador" class="page">
+  <h2>Analisar corrida</h2>
+  <div class="card analise-aviso">
+    <strong>Só funciona quando você pedir.</strong>
+    <p class="muted">Informe os dados da oferta e toque em <strong>Analisar corrida</strong>. O aplicativo não lê ofertas da Uber/99, não aceita corridas e não controla o Waze.</p>
+    <p class="muted">Por segurança, preencha os campos apenas com o veículo parado.</p>
+  </div>
+
+  <form id="formAnalise" onsubmit="analisarCorrida(event)">
+    <div class="card">
+      <h3>1. Dados da oferta</h3>
+      <div class="analise-campos">
+        <div>
+          <label for="analiseApp">Aplicativo</label>
+          <select id="analiseApp">
+            <option value="Uber">Uber</option>
+            <option value="99">99</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <div>
+          <label for="analiseValor">Valor ofertado ao motorista (R$)</label>
+          <input type="number" id="analiseValor" min="0.01" step="0.01" placeholder="Ex.: 25,00" required>
+        </div>
+        <div>
+          <label for="analiseKmBusca">Km até buscar o passageiro</label>
+          <input type="number" id="analiseKmBusca" min="0" step="0.1" value="0" required>
+        </div>
+        <div>
+          <label for="analiseKmCorrida">Km com o passageiro</label>
+          <input type="number" id="analiseKmCorrida" min="0.1" step="0.1" placeholder="Ex.: 10" required>
+        </div>
+        <div>
+          <label for="analiseMinBusca">Minutos até o passageiro</label>
+          <input type="number" id="analiseMinBusca" min="0" step="1" value="0" required>
+        </div>
+        <div>
+          <label for="analiseMinCorrida">Duração prevista da corrida (minutos)</label>
+          <input type="number" id="analiseMinCorrida" min="1" step="1" placeholder="Ex.: 25" required>
+        </div>
+        <div>
+          <label for="analisePedagio">Pedágio ou gasto extra não reembolsado (R$)</label>
+          <input type="number" id="analisePedagio" min="0" step="0.01" value="0" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>2. Custos do seu carro</h3>
+      <p class="muted">Os números iniciais são apenas exemplos. Ajuste à sua realidade.</p>
+      <div class="analise-campos">
+        <div>
+          <label for="analiseCombustivel">Preço do combustível por litro (R$)</label>
+          <input type="number" id="analiseCombustivel" min="0" step="0.01" value="6.00" required>
+        </div>
+        <div>
+          <label for="analiseConsumo">Consumo do carro (km por litro)</label>
+          <input type="number" id="analiseConsumo" min="0.1" step="0.1" value="10" required>
+        </div>
+        <div>
+          <label for="analiseDesgaste">Manutenção e desgaste por km (R$)</label>
+          <input type="number" id="analiseDesgaste" min="0" step="0.01" value="0.25" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>3. Suas metas de lucro líquido</h3>
+      <p class="muted">A análise só indica que compensa quando atingir <strong>as duas metas</strong>.</p>
+      <div class="analise-campos">
+        <div>
+          <label for="analiseMetaKm">Lucro mínimo por km rodado (R$)</label>
+          <input type="number" id="analiseMetaKm" min="0" step="0.01" value="1.00" required>
+        </div>
+        <div>
+          <label for="analiseMetaHora">Lucro mínimo por hora (R$)</label>
+          <input type="number" id="analiseMetaHora" min="0" step="0.01" value="25.00" required>
+        </div>
+      </div>
+      <button class="btn" type="submit">Analisar corrida</button>
+    </div>
+  </form>
+
+  <div class="card analise-resultado" id="resultadoAnalise" role="status" aria-live="polite" hidden>
+    <h3 id="analiseVeredito"></h3>
+    <p id="analiseMensagem"></p>
+    <div class="grid">
+      <div class="metric destaque">
+        <div class="nome">Lucro estimado</div>
+        <div class="valor" id="analiseLucro"></div>
+      </div>
+      <div class="metric">
+        <div class="nome">Lucro por km total</div>
+        <div class="valor" id="analisePorKm"></div>
+      </div>
+      <div class="metric">
+        <div class="nome">Lucro por hora total</div>
+        <div class="valor" id="analisePorHora"></div>
+      </div>
+      <div class="metric">
+        <div class="nome">Custos estimados</div>
+        <div class="valor" id="analiseCustos"></div>
+      </div>
+    </div>
+    <p id="analiseDetalhes"></p>
+    <p>Oferta mínima estimada para bater suas metas: <strong id="analiseMinima"></strong></p>
+    <p class="analise-discreto">Estimativa, não garantia: considera ida até o passageiro, percurso, tempo, combustível, manutenção e gastos extras informados. Não inclui impostos, tempo parado, retorno sem passageiro nem outros custos não preenchidos. A decisão é sempre sua.</p>
   </div>
 </section>
 
@@ -953,6 +1081,129 @@ function restaurarBackup() {
   leitor.readAsText(arquivo);
 }
 
+
+/* Analise manual: nenhum dado de ofertas externas e acessado automaticamente. */
+const CHAVE_ANALISE = "MEU_UBER_99_PRO_ANALISE_V1";
+const CAMPOS_PREFERENCIAS_ANALISE = [
+  "analiseCombustivel", "analiseConsumo", "analiseDesgaste",
+  "analiseMetaKm", "analiseMetaHora"
+];
+
+function calcularAnaliseCorrida(dados) {
+  const numeros = [
+    dados.valor, dados.kmBusca, dados.kmCorrida, dados.minBusca,
+    dados.minCorrida, dados.pedagio, dados.combustivel, dados.consumo,
+    dados.desgaste, dados.metaKm, dados.metaHora
+  ];
+  if (!numeros.every(Number.isFinite) || numeros.some(n => n < 0) ||
+      dados.valor <= 0 || dados.kmCorrida <= 0 ||
+      dados.minCorrida <= 0 || dados.consumo <= 0) {
+    throw new Error("Informe valores validos e positivos para a oferta, os km, o tempo e o consumo.");
+  }
+
+  const kmTotal = dados.kmBusca + dados.kmCorrida;
+  const minutosTotal = dados.minBusca + dados.minCorrida;
+  const horasTotal = minutosTotal / 60;
+  const custoCombustivel = kmTotal / dados.consumo * dados.combustivel;
+  const custoDesgaste = kmTotal * dados.desgaste;
+  const custoTotal = custoCombustivel + custoDesgaste + dados.pedagio;
+  const lucroEstimado = dados.valor - custoTotal;
+  const lucroPorKm = lucroEstimado / kmTotal;
+  const lucroPorHora = lucroEstimado / horasTotal;
+  const ofertaMinima = custoTotal + Math.max(dados.metaKm * kmTotal, dados.metaHora * horasTotal);
+  const atendeMetas = lucroEstimado > 0 &&
+    lucroPorKm + 1e-9 >= dados.metaKm && lucroPorHora + 1e-9 >= dados.metaHora;
+
+  return {
+    kmTotal, minutosTotal, custoCombustivel, custoDesgaste,
+    custoTotal, lucroEstimado, lucroPorKm, lucroPorHora,
+    ofertaMinima, atendeMetas
+  };
+}
+
+function carregarPreferenciasAnalise() {
+  try {
+    const salvo = JSON.parse(localStorage.getItem(CHAVE_ANALISE) || "null");
+    if (!salvo || typeof salvo !== "object") return;
+    CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
+      const valor = Number(salvo[id]);
+      if (salvo[id] !== undefined && salvo[id] !== null && salvo[id] !== "" &&
+          Number.isFinite(valor) && valor >= 0 &&
+          (id !== "analiseConsumo" || valor > 0)) {
+        document.getElementById(id).value = String(valor);
+      }
+    });
+  } catch (e) {
+    /* Sem preferencias salvas: continuam valendo os exemplos do formulario. */
+  }
+}
+
+function analisarCorrida(evento) {
+  evento.preventDefault();
+  const ids = {
+    valor: "analiseValor",
+    kmBusca: "analiseKmBusca",
+    kmCorrida: "analiseKmCorrida",
+    minBusca: "analiseMinBusca",
+    minCorrida: "analiseMinCorrida",
+    pedagio: "analisePedagio",
+    combustivel: "analiseCombustivel",
+    consumo: "analiseConsumo",
+    desgaste: "analiseDesgaste",
+    metaKm: "analiseMetaKm",
+    metaHora: "analiseMetaHora"
+  };
+  const dados = {};
+  Object.keys(ids).forEach(chave => {
+    const texto = document.getElementById(ids[chave]).value.trim();
+    dados[chave] = texto === "" ? NaN : Number(texto);
+  });
+
+  let resultado;
+  try {
+    resultado = calcularAnaliseCorrida(dados);
+  } catch (e) {
+    alert(e.message);
+    document.getElementById("resultadoAnalise").hidden = true;
+    return;
+  }
+
+  try {
+    const preferencias = {};
+    CAMPOS_PREFERENCIAS_ANALISE.forEach(id => {
+      preferencias[id] = document.getElementById(id).value;
+    });
+    localStorage.setItem(CHAVE_ANALISE, JSON.stringify(preferencias));
+  } catch (e) {
+    /* A simulacao funciona mesmo sem armazenamento. */
+  }
+
+  const area = document.getElementById("resultadoAnalise");
+  const app = document.getElementById("analiseApp").value;
+  const perdeuDinheiro = resultado.lucroEstimado <= 0;
+  area.dataset.status = perdeuDinheiro ? "ruim" : (resultado.atendeMetas ? "bom" : "atencao");
+  document.getElementById("analiseVeredito").textContent =
+    perdeuDinheiro ? "Prejuizo ou lucro zero estimado" :
+    resultado.atendeMetas ? "Dentro das suas metas" : "Abaixo das suas metas";
+  document.getElementById("analiseMensagem").textContent =
+    app + ": " + (perdeuDinheiro
+      ? "o valor da oferta nao cobre todos os custos estimados."
+      : resultado.atendeMetas
+        ? "a oferta atinge as duas metas configuradas."
+        : "ha lucro estimado, mas pelo menos uma das suas metas nao foi atingida.");
+  document.getElementById("analiseLucro").textContent = moeda(resultado.lucroEstimado);
+  document.getElementById("analisePorKm").textContent = moeda(resultado.lucroPorKm);
+  document.getElementById("analisePorHora").textContent = moeda(resultado.lucroPorHora);
+  document.getElementById("analiseCustos").textContent = moeda(resultado.custoTotal);
+  document.getElementById("analiseMinima").textContent = moeda(resultado.ofertaMinima);
+  document.getElementById("analiseDetalhes").textContent =
+    "Distancia total: " + decimal(resultado.kmTotal) + " km. Tempo total: " +
+    decimal(resultado.minutosTotal) + " min. Combustivel: " +
+    moeda(resultado.custoCombustivel) + ". Manutencao/desgaste: " +
+    moeda(resultado.custoDesgaste) + ". Outros gastos: " + moeda(dados.pedagio) + ".";
+  area.hidden = false;
+}
+
 function aba(id, botao) {
   document.querySelectorAll(".page").forEach(p => {
     p.classList.toggle("active", p.id === id);
@@ -969,6 +1220,13 @@ function aba(id, botao) {
 
 document.addEventListener("DOMContentLoaded", function() {
   carregarDados();
+  carregarPreferenciasAnalise();
+  document.getElementById("formAnalise").addEventListener("input", function() {
+    document.getElementById("resultadoAnalise").hidden = true;
+  });
+  document.getElementById("formAnalise").addEventListener("change", function() {
+    document.getElementById("resultadoAnalise").hidden = true;
+  });
 
   document.getElementById("dataLancamento").value = hoje();
 
