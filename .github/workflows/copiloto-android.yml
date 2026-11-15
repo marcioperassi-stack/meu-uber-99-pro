@@ -1,0 +1,48 @@
+name: Compilar Copiloto Android experimental
+
+on:
+  push:
+    branches:
+      - experimento-copiloto-android
+    paths:
+      - 'android-copiloto/**'
+      - '.github/workflows/copiloto-android.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Preparar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Instalar plataforma Android
+        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Compilar APK de depuracao
+        run: gradle -p android-copiloto :app:assembleDebug --no-daemon --stacktrace
+
+      - name: Arquivar APK experimental
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: meu-uber-99-copiloto-experimental
+          path: android-copiloto/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
