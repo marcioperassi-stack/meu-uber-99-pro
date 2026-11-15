@@ -292,6 +292,10 @@ class MainActivity : Activity() {
     private fun readImageLocally(uri: Uri) {
         if (readingImage || demoInputs.size != 5) return
         readingImage = true
+        // Não deixar a oferta fictícia de exemplo ser analisada como se viesse do print.
+        demoInputs.forEach { it.setText("") }
+        demoResult?.text = "Aguardando leitura do print."
+        demoResult?.setTextColor(foreground)
         screenshotStatus?.text = "Lendo os números do print no celular..."
         val img = try {
             InputImage.fromFilePath(this, uri)
@@ -303,12 +307,21 @@ class MainActivity : Activity() {
         val reader = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
         reader.process(img)
             .addOnSuccessListener { recognized ->
-                val offer = OfferEngine.parseScreenshotText(recognized.text)
+                val inspection = OfferEngine.inspectScreenshotText(recognized.text)
+                val offer = inspection.offer
                 if (offer == null) {
-                    screenshotStatus?.text =
-                        "A leitura não encontrou uma única oferta com duas etapas completas. " +
-                        "Confira se o print mostra preço, busca e viagem, ou digite os valores."
-                    demoResult?.text = "Ainda não analisada: informe ou confira os valores."
+                    screenshotStatus?.text = if (recognized.text.isBlank()) {
+                        "Nenhum texto foi reconhecido. Experimente recortar o print " +
+                            "para mostrar só a oferta, com números maiores."
+                    } else {
+                        "O print foi lido, mas não deu para identificar a oferta completa. " +
+                            "Valores: ${inspection.fareCount} (precisa 1); " +
+                            "distâncias: ${inspection.distanceCount} (precisa 2); " +
+                            "tempos: ${inspection.timeCount} (precisa 2). " +
+                            "Tente recortar a imagem para mostrar somente a proposta " +
+                            "ou complete manualmente."
+                    }
+                    demoResult?.text = "Análise pendente: confira os campos e preencha o que faltou."
                 } else {
                     val data = listOf(
                         offer.fare, offer.pickupKm, offer.tripKm,
