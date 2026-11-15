@@ -132,6 +132,11 @@ class OfferEngineTest {
         assertEquals(1, result.fareCount)
         assertEquals(1, result.distanceCount)
         assertEquals(2, result.timeCount)
+        assertEquals(19.40, result.fare!!, 0.0001)
+        assertNull(result.pickupKm)
+        assertNull(result.tripKm)
+        assertEquals(4.0, result.pickupMinutes!!, 0.0001)
+        assertEquals(12.0, result.tripMinutes!!, 0.0001)
     }
 
     @Test fun taxaExtraNaMesmaLinhaDaTarifaNaoApagaValorPrincipal() {
