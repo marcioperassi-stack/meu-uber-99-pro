@@ -34,7 +34,7 @@ O consumo inicial de etanol é **9,0 km/l** (referência urbana do Sandero Zen 2
 - Lucro por hora = lucro estimado / (tempo total / 60).
 - Oferta mínima estimada = maior entre (faturamento mínimo por hora × horas totais) e [custos + maior valor entre (meta por km × distância total) e (meta de sobra por hora × horas totais)].
 
-Uma oferta só aparece como **Dentro das suas metas** quando tem sobra positiva, alcança pelo menos **R$ 40,00/h de faturamento bruto** e atende às duas metas de sobra líquida.
+O analisador exibe um aviso grande em **verde: ✅ CORRIDA BOA**, somente quando há sobra positiva, o faturamento bruto alcança ao menos **R$ 40,00/h** e ambas as metas de sobra por km e por hora são atingidas. Caso não alcance qualquer uma dessas metas, mostra **vermelho: ❌ CORRIDA RUIM**. Quando falta previsão de km mensais para distribuir um financiamento existente, não aprova nem rejeita: aparece **amarelo: ⚠️ ANÁLISE INCOMPLETA**. O resultado é indicativo, não uma aceitação ou recusa automática de ofertas.
 
 ## Financiamento do Sandero
 
