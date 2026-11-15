@@ -6,6 +6,19 @@ plugins {
 android {
     namespace = "br.com.meuuber99pro.copiloto"
     compileSdk = 35
+    flavorDimensions += "modo"
+    productFlavors {
+        create("demo") {
+            dimension = "modo"
+            applicationIdSuffix = ".demo"
+            versionNameSuffix = "-demo-sem-acessibilidade"
+        }
+        create("automatico") {
+            dimension = "modo"
+            versionNameSuffix = "-experimental-acessibilidade"
+        }
+    }
+    buildFeatures { buildConfig = true }
     defaultConfig {
         applicationId = "br.com.meuuber99pro.copiloto"
         minSdk = 26
