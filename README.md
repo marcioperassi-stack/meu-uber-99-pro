@@ -38,7 +38,9 @@ Uma oferta só aparece como **Dentro das suas metas** quando possui lucro positi
 
 ## Financiamento do Sandero
 
-A parcela mensal informada pelo motorista é **R$ 2.252,00**. Ela aparece como compromisso fixo de caixa no analisador e é ajustável. Para distribuí-la por corrida, informe a **previsão de quilômetros de trabalho no mês**; esse campo fica vazio de propósito, pois ainda não sabemos a quilometragem real.
+A parcela mensal informada pelo motorista é **R$ 2.252,00**. Ela aparece como compromisso fixo de caixa no analisador e é ajustável. Para distribuí-la por corrida, informe a **previsão de quilômetros de trabalho no mês**.
+
+O motorista informou uma faixa de **250 a 350 km por dia**. O analisador mostra estes valores editáveis e permite inserir os **dias trabalhados por mês** (não supostos automaticamente). Ao tocar em **Calcular km mensais pela média**, multiplica os dois extremos pelos dias e aplica a média de 300 km/dia ao campo de quilômetros mensais para o rateio. Por exemplo, 22 dias indicam 5.500 a 7.700 km (média 6.600 km), e 26 dias indicam 6.500 a 9.100 km (média 7.800 km). São cenários de planejamento, não registros de quilômetros efetivamente rodados.
 
 - Rateio da parcela na oferta = (parcela mensal / quilômetros mensais previstos) × quilômetros totais da corrida, incluindo deslocamento até o passageiro.
 - Sobra de caixa estimada após rateio = valor ofertado − custos variáveis da corrida − rateio da parcela.
