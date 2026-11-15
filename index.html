@@ -1098,7 +1098,7 @@ function calcularAnaliseCorrida(dados) {
   if (!numeros.every(Number.isFinite) || numeros.some(n => n < 0) ||
       dados.valor <= 0 || dados.kmCorrida <= 0 ||
       dados.minCorrida <= 0 || dados.consumo <= 0) {
-    throw new Error("Informe valores validos e positivos para a oferta, os km, o tempo e o consumo.");
+    throw new Error("Informe valores válidos e positivos para a oferta, os km, o tempo e o consumo.");
   }
 
   const kmTotal = dados.kmBusca + dados.kmCorrida;
@@ -1183,23 +1183,23 @@ function analisarCorrida(evento) {
   const perdeuDinheiro = resultado.lucroEstimado <= 0;
   area.dataset.status = perdeuDinheiro ? "ruim" : (resultado.atendeMetas ? "bom" : "atencao");
   document.getElementById("analiseVeredito").textContent =
-    perdeuDinheiro ? "Prejuizo ou lucro zero estimado" :
+    perdeuDinheiro ? "Prejuízo ou lucro zero estimado" :
     resultado.atendeMetas ? "Dentro das suas metas" : "Abaixo das suas metas";
   document.getElementById("analiseMensagem").textContent =
     app + ": " + (perdeuDinheiro
-      ? "o valor da oferta nao cobre todos os custos estimados."
+      ? "o valor da oferta não cobre todos os custos estimados."
       : resultado.atendeMetas
         ? "a oferta atinge as duas metas configuradas."
-        : "ha lucro estimado, mas pelo menos uma das suas metas nao foi atingida.");
+        : "há lucro estimado, mas pelo menos uma das suas metas não foi atingida.");
   document.getElementById("analiseLucro").textContent = moeda(resultado.lucroEstimado);
   document.getElementById("analisePorKm").textContent = moeda(resultado.lucroPorKm);
   document.getElementById("analisePorHora").textContent = moeda(resultado.lucroPorHora);
   document.getElementById("analiseCustos").textContent = moeda(resultado.custoTotal);
   document.getElementById("analiseMinima").textContent = moeda(resultado.ofertaMinima);
   document.getElementById("analiseDetalhes").textContent =
-    "Distancia total: " + decimal(resultado.kmTotal) + " km. Tempo total: " +
-    decimal(resultado.minutosTotal) + " min. Combustivel: " +
-    moeda(resultado.custoCombustivel) + ". Manutencao/desgaste: " +
+    "Distância total: " + decimal(resultado.kmTotal) + " km. Tempo total: " +
+    decimal(resultado.minutosTotal) + " min. Combustível: " +
+    moeda(resultado.custoCombustivel) + ". Manutenção/desgaste: " +
     moeda(resultado.custoDesgaste) + ". Outros gastos: " + moeda(dados.pedagio) + ".";
   area.hidden = false;
 }
